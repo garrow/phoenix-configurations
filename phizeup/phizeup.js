@@ -18,6 +18,8 @@
  * However, my preferred keybinds reuse the same cmd,ctrl,alt, modifier keys and use
  * letter keys on the keyboard, instead of changing modifier keys.
  *
+ * Credits
+ * Original keybinds and the SizeUp name - SizeUp - http://www.irradiatedsoftware.com/sizeup/
  *
  * TODO List:
  * - Add spaces and screens support.
