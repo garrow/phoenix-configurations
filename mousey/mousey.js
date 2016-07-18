@@ -20,9 +20,10 @@ class MousePointer {
 
         var modalBounding = modal.frame();
 
-        // Drawing a Modal renders from the bottom left,
-        // whereas Mouse position is given from Top Left of screen.
-        // So we offset Y axis of the Modal.origin to screen bottom, and then center over Mouse pointer normally.
+        // Drawing a Modal renders from the bottom left, (Cocoa, screen coordinates space)
+        // whereas Mouse position is given from Top Left of screen (Quartz / Global coordinates space)
+        // So we offset Y axis of the Modal.origin to screen bottom, and
+        // then place the center of our Modal over Mouse pointer position.
         modal.origin = {
             x: mouse.x - (modalBounding['width'] / 2),
             y: invertedModalYAxisOffset - mouse.y - (modalBounding['height'] / 2)
