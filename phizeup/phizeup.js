@@ -78,7 +78,8 @@ var config = {
 
 var setupHandlers = function(useSizeUpDefaults){
     var modKeys1 =   ['ctrl', 'alt', 'cmd'],
-        modKeys2 =   ['ctrl', 'alt', 'shift'];
+        modKeys2 =   ['ctrl', 'alt', 'shift'],
+        screenKeys = ['ctrl', 'alt'];
 
     var quarters;
 
@@ -124,6 +125,9 @@ var setupHandlers = function(useSizeUpDefaults){
 
         centre:      new Key('c',     modKeys1, putWindow('centre')),
         maximised:   new Key('m',     modKeys1, maximise()),
+
+        screenNext: new Key('right',  screenKeys, putWindowScreen('next')),
+        screenPrev: new Key('left',   screenKeys, putWindowScreen('previous')),
     };
 };
 
@@ -320,6 +324,77 @@ var windowMovedAlert = function(message, window) {
         alertModal(message, window.screen());
     }
 };
+
+
+var putWindowScreen = function(toScreen) {
+    return function() {
+        var window = Window.focused();
+
+
+        if (window == undefined) {
+            alertModal("NO Windows for current app");
+            return;
+        }
+
+
+        var currentScreen = window.screen();
+        var screenList = Screen.all();
+
+        if (screenList.length < 2) {
+            alertModal("NO SCREENS");
+            return;
+        }
+
+        var op = "";
+
+        op += "Current Screen ID: " + currentScreen.identifier() + "\n";
+
+
+        var candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
+
+        _.map(candidateOtherScreens, function(s) {
+            op += "Screen ID: " + s.identifier() + "\n" + JSON.stringify(s.flippedFrame()) + "\n";
+        });
+
+        var newScreenFrame = candidateOtherScreens[0].flippedFrame();
+
+        op += "New Screen Frame " + JSON.stringify(newScreenFrame) + "\n";
+
+        var newXOffset = newScreenFrame['x'];
+        var newYOffset = newScreenFrame['y'];
+
+        var oldFrame = window.frame();
+
+        // debug(candidateOtherScreens);
+
+        op += "Old Frame " + JSON.stringify(oldFrame) + "\n";
+
+        // debug(newYOffset);
+
+        var newFrame = {
+            x: newXOffset,
+            y: newYOffset,
+            width: oldFrame.width,
+            height: oldFrame.height
+        };
+
+        // debug(newFrame);
+
+        op += "New Frame " + JSON.stringify(newFrame) + "\n";
+        // windowMovedAlert(op);
+
+
+
+        alertModal("MOVE SCREEN");
+        window.setFrame(newFrame);
+
+
+        // Phoenix.notify(JSON.stringify(screen.flippedFrame()));
+        // Phoenix.notify(JSON.stringify(screen.identifier()));
+
+    };
+};
+
 
 
 function debug(o){
