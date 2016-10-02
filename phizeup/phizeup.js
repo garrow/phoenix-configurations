@@ -22,7 +22,7 @@
  * ---------------------
  *
  * In addition I have added the following partitions, which are really only
- * useful on a larger screens.
+ * useful on larger screens.
  *
  * These are bound to the number pad keys, as when I have a large screen attached, I have a full-sized keyboard.
  *
