@@ -15,10 +15,42 @@
  *
  * The default configuration uses SizeUp like keybinds.
  *
- * However, my preferred keybinds reuse the same cmd,ctrl,alt, modifier keys and use
+ * However, my preferred keybinds reuse the same cmd,ctrl,alt, modifier keys and use the `rtfg`
  * letter keys on the keyboard, instead of changing modifier keys.
  *
+ * Additional Partitions
+ * ---------------------
+ *
+ * In addition I have added the following partitions, which are really only
+ * useful on larger screens.
+ *
+ * These are bound to the number pad keys, as when I have a large screen attached, I have a full-sized keyboard.
+ *
+ * Below the keybinds are listed as;
+ * Partition
+ * (Numpad Key)
+ *
+ * +-----------------------------+
+ * |         |         |         |
+ * |   TL6   |   TC6   |   TR6   |
+ * |   (7)   |   (8)   |   (9)   |
+ * +-----------------------------+
+ * |         |         |         |
+ * |   BL6   |   BC6   |   BR6   |
+ * |   (4)   |   (5)   |   (6)   |
+ * +-----------------------------+
+ *
+ * +-----------------------------+
+ * |         |         |         |
+ * |  Left   |  Centre |  Right  |
+ * |  Third  |  Third  |  Third  |
+ * |   (1)   |   (2)   |   (3)   |
+ * |         |         |         |
+ * +-----------------------------+
+ *
  * Credits
+ * -------
+ *
  * Original keybinds and the SizeUp name - SizeUp - http://www.irradiatedsoftware.com/sizeup/
  *
  * TODO List:
@@ -27,18 +59,45 @@
  * - Reuse the same modal object.
  * - Convert whole script to an object
  * - Simplify the configuration.
+ * - Convert all movement messages to unicode box drawings.
+ *
+ * Known Bugs
+ * - When resizing windows which define a minimum size (e.g. Spotify) when placed in a
+ *   small size at a screen edge may push onto another monitor.
  */
 
 "use strict";
 
+/**
+ * Configure PhizeUp's behaviour here.
+ */
 var config = {
     movementAlertDuration: 0.5,
+    sizeUpDefaults: false
 };
 
-var setupHandlers = function(){
+var setupHandlers = function(useSizeUpDefaults){
     var modKeys1 =   ['ctrl', 'alt', 'cmd'],
-        modKeys2 = ['ctrl', 'alt', 'shift'];
+        modKeys2 =   ['ctrl', 'alt', 'shift'];
 
+    var quarters;
+
+    if (useSizeUpDefaults) {
+        quarters = [
+            new Key('left',  modKeys2, putWindow('topLeft')),
+            new Key('up',    modKeys2, putWindow('topRight')),
+            new Key('down',  modKeys2, putWindow('bottomLeft')),
+            new Key('right', modKeys2, putWindow('bottomRight')),
+        ]
+    } else {
+        // The alternative keymap allows using the RTFG keys as diagonal directional arrows.
+        quarters = [
+            new Key('r', modKeys1, putWindow('topLeft')),
+            new Key('t', modKeys1, putWindow('topRight')),
+            new Key('f', modKeys1, putWindow('bottomLeft')),
+            new Key('g', modKeys1, putWindow('bottomRight')),
+        ]
+    }
 
     return {
         up:          new Key('up',    modKeys1, putWindow('up')),
@@ -46,18 +105,24 @@ var setupHandlers = function(){
         left:        new Key('left',  modKeys1, putWindow('left')),
         right:       new Key('right', modKeys1, putWindow('right')),
 
-        topLeft:     new Key('r',     modKeys2, putWindow('topLeft')),
-        topRight:    new Key('t',     modKeys2, putWindow('topRight')),
-        bottomLeft:  new Key('f',     modKeys2, putWindow('bottomLeft')),
-        bottomRight: new Key('g',     modKeys2, putWindow('bottomRight')),
+        thirds: [
+            new Key('keypad1',     modKeys1, putWindow('leftThird')),
+            new Key('keypad2',     modKeys1, putWindow('centreThird')),
+            new Key('keypad3',     modKeys1, putWindow('rightThird')),
+        ],
 
-        // An alternative keymap allows using the RTFG keys as diagonal directional arrows.
-        // topLeft:     new Key('r',     modKeys1, putWindow('topLeft')),
-        // topRight:    new Key('t',     modKeys1, putWindow('topRight')),
-        // bottomLeft:  new Key('f',     modKeys1, putWindow('bottomLeft')),
-        // bottomRight: new Key('g',     modKeys1, putWindow('bottomRight')),
+        sixths: [
+            new Key('keypad7', modKeys1, putWindow('topLeftSix')),
+            new Key('keypad8', modKeys1, putWindow('topCentreSix')),
+            new Key('keypad9', modKeys1, putWindow('topRightSix')),
+            new Key('keypad4', modKeys1, putWindow('botLeftSix')),
+            new Key('keypad5', modKeys1, putWindow('botCentreSix')),
+            new Key('keypad6', modKeys1, putWindow('botRightSix')),
+        ],
 
-        center:      new Key('c',     modKeys1, putWindow('center')),
+        quarters: quarters,
+
+        centre:      new Key('c',     modKeys1, putWindow('centre')),
         maximised:   new Key('m',     modKeys1, maximise()),
     };
 };
@@ -72,7 +137,42 @@ var Movements = {
     bottomLeft:  "↙️\nBottom Left",
     bottomRight: "↘️\nBottom Right",
     maximised:   "🆙\nMaximised",
-    center:      "🔳\nCenter",
+    centre:      "🔳\nCenter",
+
+    // I can't decide between these or the full 6x grid.
+    // leftThird:    "⅓\n┏┱┬┐\nL┈┈\n┗┹┴┘",
+    // centreThird:  "⅓\n┌┲┱┐\n┈C┈\n└┺┹┘",
+    // rightThird:   "⅓\n┌┬┲┓\n┈┈R\n└┴┺┛",
+
+    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘",
+    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘",
+    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛",
+
+    topLeftSix:   "⅙\n┌─┬─┬─┐\n│╳│┈│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
+    topCentreSix: "⅙\n┌─┬─┬─┐\n│┈│╳│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
+    topRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│╳│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
+    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│╳│┈│┈│\n└─┴─┴─┘",
+    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│╳│┈│\n└─┴─┴─┘",
+    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│┈│╳│\n└─┴─┴─┘",
+
+    // Getter safely falls back on plain text label.
+    get: function(direction) {
+        return this[direction] || direction.toString();
+    },
+};
+
+/**
+ * Sometimes a window doesn't actually exist.
+ *
+ * @param window
+ * @param action
+ * @returns {*}
+ */
+var withWindow = function withWindow(window, action) {
+    if (window) {
+        return action(window);
+    }
+    alertModal("Nothing to move");
 };
 
 /**
@@ -83,11 +183,13 @@ var Movements = {
  */
 var putWindow = function(direction){
     return function() {
-        var window = Window.focused();
-        var screenFrame = window.screen().frameInRectangle();
 
-        windowMovedAlert(Movements[direction]);
-        setInSubFrame(window, screenFrame, direction);
+        withWindow(Window.focused(), function(window) {
+            var screenFrame = window.screen().flippedFrame();
+
+            windowMovedAlert(Movements.get(direction), window);
+            setInSubFrame(window, screenFrame, direction);
+        });
     };
 };
 
@@ -109,14 +211,16 @@ var setInSubFrame = function(window, parentFrame, direction) {
  */
 var maximise = function() {
     return function () {
-        windowMovedAlert(Movements.maximised);
-        Window.focused().maximise();
+        withWindow(Window.focused(), function(window){
+            windowMovedAlert(Movements.maximised, window);
+            window.maximise();
+        });
     };
 };
 
 /**
  * Build a subframe within a parent frame.
- * This fn does the work of halving and quartering the rectangle. (screen)
+ * This fn does the work of subdividing the rectangle. (screen)
  *
  * @param parentFrame
  * @param direction
@@ -128,21 +232,51 @@ var getSubFrame = function(parentFrame, direction) {
     var parentWidth  = parentFrame.width;
     var parentHeight = parentFrame.height;
 
+    /**
+    * When using multiple screens, the current screen may be offset from the Zero point screen,
+    * using the raw x,y coords blindly will mess up the positions.
+    * Instead, we offset the screen x,y, coords based on the original origin point of the screen.
+    *      |---|
+    *  |---|---|
+    * In this case we have two screens side by side, but aligned on the physical bottom edge.
+    * Remember that coords are origin 0,0 top left.
+    * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
+    * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
+    **/
+    var change = function(original) {
+        return function(changeBy) {
+            var offset = changeBy || 0;
+            return original + offset;
+        };
+    };
+
+    var y = change(parentY);
+    var x = change(parentX);
+
     var parentHalfWide = parentWidth / 2;
     var parentHalfHigh = parentHeight / 2;
+    var parentThird    = parentWidth / 3;
+    var parentTwoThirds = parentThird * 2;
 
     var subFrames = {
-        left:        { x: parentX,        y: parentY,        width: parentHalfWide, height: parentHeight   },
-        right:       { x: parentHalfWide, y: parentY,        width: parentHalfWide, height: parentHeight   },
-        up:          { x: parentX,        y: parentY,        width: parentWidth,    height: parentHalfHigh },
-        down:        { x: parentX,        y: parentHalfHigh, width: parentWidth,    height: parentHalfHigh },
-
-        topLeft:     { x: parentX,        y: parentY,        width: parentHalfWide, height: parentHalfHigh },
-        bottomLeft:  { x: parentX,        y: parentHalfHigh, width: parentHalfWide, height: parentHalfHigh },
-        topRight:    { x: parentHalfWide, y: parentY,        width: parentHalfWide, height: parentHalfHigh },
-        bottomRight: { x: parentHalfWide, y: parentHalfHigh, width: parentHalfWide, height: parentHalfHigh },
-
-        center:      { x: parentHalfWide/2, y: parentHalfHigh/2, width: parentHalfWide, height: parentHalfHigh  }
+        left:         { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHeight   },
+        right:        { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHeight   },
+        up:           { x: x(),                 y: y(),                 width: parentWidth,    height: parentHalfHigh },
+        down:         { x: x(),                 y: y(parentHalfHigh),   width: parentWidth,    height: parentHalfHigh },
+        topLeft:      { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHalfHigh },
+        bottomLeft:   { x: x(),                 y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
+        topRight:     { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHalfHigh },
+        bottomRight:  { x: x(parentHalfWide),   y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
+        centre:       { x: x(parentHalfWide/2), y: y(parentHalfHigh/2), width: parentHalfWide, height: parentHalfHigh },
+        leftThird:    { x: x(),                 y: y(),                 width: parentThird,    height: parentHeight   },
+        centreThird:  { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHeight   },
+        rightThird:   { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHeight   },
+        topLeftSix:   { x: x(),                 y: y(),                 width: parentThird,    height: parentHalfHigh },
+        topCentreSix: { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHalfHigh },
+        topRightSix:  { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHalfHigh },
+        botLeftSix:   { x: x(),                 y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
+        botCentreSix: { x: x(parentThird),      y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
+        botRightSix:  { x: x(parentTwoThirds),  y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh }
     };
 
     return subFrames[direction];
@@ -153,24 +287,47 @@ var getSubFrame = function(parentFrame, direction) {
  * TODO - Reuse the same Modal object to avoid artifacts when repeating actions and building lots of modals.
  *
  * @param message
+ * @param onScreen
  * @returns {Modal}
  */
-var windowMovedAlert = function (message) {
-    var alertModal      = new Modal();
-    alertModal.duration = config.movementAlertDuration;
-    alertModal.message  = message;
+var alertModal = function (message, onScreen) {
+    var alertModal         = new Modal();
+    alertModal.duration    = config.movementAlertDuration;
+    alertModal.text        = message;
+    alertModal.appearance  = 'dark';
 
-    var screenFrame     = Screen.main().frameInRectangle();
+    var screenFrame     = (onScreen || Screen.main()).frame();
     var alertFrame      = alertModal.frame();
 
     alertModal.origin = {
-        x: (screenFrame.width - alertFrame.width) * 0.5,
-        y: (screenFrame.height - alertFrame.height) * 0.5
+        x:  (screenFrame.x + (screenFrame.width * 0.5)) - (alertFrame.width * 0.5),
+        y:  (screenFrame.y + (screenFrame.height * 0.5)) - (alertFrame.height * 0.5)
     };
+
     alertModal.show();
 
     return alertModal;
 };
 
+/**
+ * Places an alertModal on the screen the window was on, with the provided text message.
+ *
+ * @param message
+ * @param window
+ */
+var windowMovedAlert = function(message, window) {
+    if (window) {
+        alertModal(message, window.screen());
+    }
+};
+
+
+function debug(o){
+    Phoenix.notify(JSON.stringify(o));
+}
+
+function debugscreen(){debug((Window.focused().screen().flippedFrame()))}
+
+
 // Phoenix requires us to keep a reference to the key handlers.
-var keyHandlers = setupHandlers();
+var keyHandlers = setupHandlers(config.sizeUpDefaults);
