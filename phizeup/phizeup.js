@@ -131,35 +131,39 @@ var setupHandlers = function(useSizeUpDefaults){
     };
 };
 
+
+var cool = [
+
+
+];
+
 var Movements = {
-    up:          "🔼\nUp",
-    down:        "🔽\nDown",
-    left:        "◀️\nLeft",
-    right:       "▶️\nRight",
-    topLeft:     "↖️\nTop Left",
-    topRight:    "↗️\nTop Right",
-    bottomLeft:  "↙️\nBottom Left",
-    bottomRight: "↘️\nBottom Right",
-    maximised:   "🆙\nMaximised",
-    centre:      "🔳\nCenter",
+    up:          "½\n┏━━━┓\n┃┅╳┅┃\n┡━━━┩\n│┈┈┈│\n└───┘\nUp",
+    down:        "½\n┌───┐\n│┈┈┈│\n┢━━━┪\n┃┅╳┅┃\n┗━━━┛\nDown",
 
-    // I can't decide between these or the full 6x grid.
-    // leftThird:    "⅓\n┏┱┬┐\nL┈┈\n┗┹┴┘",
-    // centreThird:  "⅓\n┌┲┱┐\n┈C┈\n└┺┹┘",
-    // rightThird:   "⅓\n┌┬┲┓\n┈┈R\n└┴┺┛",
+    left:        "½\n┏━┱─┐\n┃┋┃┈│\n┃╳┃┈│\n┃┋┃┈│\n┗━┹─┘\nLeft",
+    right:       "½\n┌─┲━┓\n│┈┃┋┃\n│┈┃╳┃\n│┈┃┋┃\n└─┺━┛\nRight",
 
-    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘",
-    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘",
-    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛",
+    topLeft:     "¼\n┏━┱─┐\n┃╳┃┈│\n┡━╃─┤\n│┈│┈│\n└─┴─┘\nUp Left",
+    topRight:    "¼\n┌─┲━┓\n│┈┃╳┃\n├─╄━┩\n│┈│┈│\n└─┴─┘\nUp Right",
+    bottomLeft:  "¼\n┌─┬─┐\n│┈│┈│\n┢━╅─┤\n┃╳┃┈│\n┗━┹─┘\nDown Left",
+    bottomRight: "¼\n┌─┬─┐\n│┈│┈│\n├─╆━┪\n│┈┃╳┃\n└─┺━┛\nDown Right",
 
-    topLeftSix:   "⅙\n┌─┬─┬─┐\n│╳│┈│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    topCentreSix: "⅙\n┌─┬─┬─┐\n│┈│╳│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    topRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│╳│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│╳│┈│┈│\n└─┴─┴─┘",
-    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│╳│┈│\n└─┴─┴─┘",
-    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│┈│╳│\n└─┴─┴─┘",
+    maximised:   "1\n┏━━━┓\n┃┈┈┈┃\n┃┈╳┈┃\n┃┈┈┈┃\n┗━━━┛\nFull Screen",
+    centre:      "¼\n┌───┐\n│┏━┓│\n│┃╳┃│\n│┗━┛│\n└───┘\nCentre",
 
-    // Getter safely falls back on plain text label.
+    leftThird:    "⅓\n┏━┱─┬─┐\n┃┋┃┈│┈│\n┃╳┃┈│┈│\n┃┋┃┈│┈│\n┗━┹─┴─┘\nLeft",
+    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┋┃┈│\n│┈┃╳┃┈│\n│┈┃┋┃┈│\n└─┺━┹─┘\nCentre",
+    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┋┃\n│┈│┈┃╳┃\n│┈│┈┃┋┃\n└─┴─┺━┛\nRight",
+
+    topLeftSix:   "⅙\n┏━┱─┬─┐\n┃╳┃┈│┈│\n┡━╃─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Left",
+    topCentreSix: "⅙\n┌─┲━┱─┐\n│┈┃╳┃┈│\n├─╄━╃─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Centre",
+    topRightSix:  "⅙\n┌─┬─┲━┓\n│┈│┈┃╳┃\n├─┼─╄━┩\n│┈│┈│┈│\n└─┴─┴─┘\nUp Right",
+    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n┢━╅─┼─┤\n┃╳┃┈│┈│\n┗━┹─┴─┘\nDown Left",
+    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─╆━╅─┤\n│┈┃╳┃┈│\n└─┺━┹─┘\nDown Centre",
+    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─╆━┪\n│┈│┈┃╳┃\n└─┴─┺━┛\nDown Right",
+
+    // Safely fall back to a plain text label.
     get: function(direction) {
         return this[direction] || direction.toString();
     },
