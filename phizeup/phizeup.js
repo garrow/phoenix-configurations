@@ -54,7 +54,7 @@
  * Original keybinds and the SizeUp name - SizeUp - http://www.irradiatedsoftware.com/sizeup/
  *
  * TODO List:
- * - Add spaces and screens support.
+ * - Add spaces support.
  *
  * - Reuse the same modal object.
  * - Convert whole script to an object
@@ -78,7 +78,8 @@ var config = {
 
 var setupHandlers = function(useSizeUpDefaults){
     var modKeys1 =   ['ctrl', 'alt', 'cmd'],
-        modKeys2 =   ['ctrl', 'alt', 'shift'];
+        modKeys2 =   ['ctrl', 'alt', 'shift'],
+        screenKeys = ['ctrl', 'alt'];
 
     var quarters;
 
@@ -109,6 +110,9 @@ var setupHandlers = function(useSizeUpDefaults){
             new Key('keypad1',     modKeys1, putWindow('leftThird')),
             new Key('keypad2',     modKeys1, putWindow('centreThird')),
             new Key('keypad3',     modKeys1, putWindow('rightThird')),
+
+            new Key('keypad0',     modKeys1, putWindow('left2Thirds')),
+            new Key('keypad.',     modKeys1, putWindow('right2Thirds')),
         ],
 
         sixths: [
@@ -122,40 +126,51 @@ var setupHandlers = function(useSizeUpDefaults){
 
         quarters: quarters,
 
-        centre:      new Key('c',     modKeys1, putWindow('centre')),
-        maximised:   new Key('m',     modKeys1, maximise()),
+        centre: [
+            new Key('c',       modKeys1, putWindow('centre')),
+            new Key('keypad-', modKeys1, putWindow('centre'))
+        ],
+
+        maximised:[
+            new Key('m',       modKeys1, maximise()),
+            new Key('keypad+', modKeys1, maximise()),
+        ],
+
+        screenNext: new Key('right',  screenKeys, putWindowScreen('next')),
+        screenPrev: new Key('left',   screenKeys, putWindowScreen('previous')),
     };
 };
 
 var Movements = {
-    up:          "🔼\nUp",
-    down:        "🔽\nDown",
-    left:        "◀️\nLeft",
-    right:       "▶️\nRight",
-    topLeft:     "↖️\nTop Left",
-    topRight:    "↗️\nTop Right",
-    bottomLeft:  "↙️\nBottom Left",
-    bottomRight: "↘️\nBottom Right",
-    maximised:   "🆙\nMaximised",
-    centre:      "🔳\nCenter",
+    up:          "½\n┏━━━┓\n┃┅╳┅┃\n┡━━━┩\n│┈┈┈│\n└───┘\nUp",
+    down:        "½\n┌───┐\n│┈┈┈│\n┢━━━┪\n┃┅╳┅┃\n┗━━━┛\nDown",
 
-    // I can't decide between these or the full 6x grid.
-    // leftThird:    "⅓\n┏┱┬┐\nL┈┈\n┗┹┴┘",
-    // centreThird:  "⅓\n┌┲┱┐\n┈C┈\n└┺┹┘",
-    // rightThird:   "⅓\n┌┬┲┓\n┈┈R\n└┴┺┛",
+    left:        "½\n┏━┱─┐\n┃┅┃┈│\n┃╳┃┈│\n┃┅┃┈│\n┗━┹─┘\nLeft",
+    right:       "½\n┌─┲━┓\n│┈┃┅┃\n│┈┃╳┃\n│┈┃┅┃\n└─┺━┛\nRight",
 
-    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘",
-    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘",
-    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛",
+    topLeft:     "¼\n┏━┱─┐\n┃╳┃┈│\n┡━╃─┤\n│┈│┈│\n└─┴─┘\nUp Left",
+    topRight:    "¼\n┌─┲━┓\n│┈┃╳┃\n├─╄━┩\n│┈│┈│\n└─┴─┘\nUp Right",
+    bottomLeft:  "¼\n┌─┬─┐\n│┈│┈│\n┢━╅─┤\n┃╳┃┈│\n┗━┹─┘\nDown Left",
+    bottomRight: "¼\n┌─┬─┐\n│┈│┈│\n├─╆━┪\n│┈┃╳┃\n└─┺━┛\nDown Right",
 
-    topLeftSix:   "⅙\n┌─┬─┬─┐\n│╳│┈│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    topCentreSix: "⅙\n┌─┬─┬─┐\n│┈│╳│┈│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    topRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│╳│\n├─┼─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘",
-    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│╳│┈│┈│\n└─┴─┴─┘",
-    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│╳│┈│\n└─┴─┴─┘",
-    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─┼─┤\n│┈│┈│╳│\n└─┴─┴─┘",
+    maximised:   "1\n┏━━━┓\n┃┈┈┈┃\n┃┈╳┈┃\n┃┈┈┈┃\n┗━━━┛\nFull Screen",
+    centre:      "¼\n┌───┐\n│┏━┓│\n│┃╳┃│\n│┗━┛│\n└───┘\nCentre",
 
-    // Getter safely falls back on plain text label.
+    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘\nLeft",
+    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘\nCentre",
+    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛\nRight",
+
+    left2Thirds:  "⅔\n┏━━━┱─┐\n┃┅┅┅┃┈│\n┃┅╳┅┃┈│\n┃┅┅┅┃┈│\n┗━━━┹─┘\nLeft ⅔",
+    right2Thirds: "⅔\n┌─┲━━━┓\n│┈┃┅┅┅┃\n│┈┃┅╳┅┃\n│┈┃┅┅┅┃\n└─┺━━━┛\nRight ⅔",
+
+    topLeftSix:   "⅙\n┏━┱─┬─┐\n┃╳┃┈│┈│\n┡━╃─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Left",
+    topCentreSix: "⅙\n┌─┲━┱─┐\n│┈┃╳┃┈│\n├─╄━╃─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Centre",
+    topRightSix:  "⅙\n┌─┬─┲━┓\n│┈│┈┃╳┃\n├─┼─╄━┩\n│┈│┈│┈│\n└─┴─┴─┘\nUp Right",
+    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n┢━╅─┼─┤\n┃╳┃┈│┈│\n┗━┹─┴─┘\nDown Left",
+    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─╆━╅─┤\n│┈┃╳┃┈│\n└─┺━┹─┘\nDown Centre",
+    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─╆━┪\n│┈│┈┃╳┃\n└─┴─┺━┛\nDown Right",
+
+    // Safely fall back to a plain text label.
     get: function(direction) {
         return this[direction] || direction.toString();
     },
@@ -271,6 +286,8 @@ var getSubFrame = function(parentFrame, direction) {
         leftThird:    { x: x(),                 y: y(),                 width: parentThird,    height: parentHeight   },
         centreThird:  { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHeight   },
         rightThird:   { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHeight   },
+        left2Thirds:  { x: x(),                 y: y(),                 width: parentTwoThirds, height: parentHeight  },
+        right2Thirds: { x: x(parentThird),      y: y(),                 width: parentTwoThirds, height: parentHeight  },
         topLeftSix:   { x: x(),                 y: y(),                 width: parentThird,    height: parentHalfHigh },
         topCentreSix: { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHalfHigh },
         topRightSix:  { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHalfHigh },
@@ -320,6 +337,77 @@ var windowMovedAlert = function(message, window) {
         alertModal(message, window.screen());
     }
 };
+
+
+var putWindowScreen = function(toScreen) {
+    return function() {
+        var window = Window.focused();
+
+
+        if (window == undefined) {
+            alertModal("NO Windows for current app");
+            return;
+        }
+
+
+        var currentScreen = window.screen();
+        var screenList = Screen.all();
+
+        if (screenList.length < 2) {
+            alertModal("NO SCREENS");
+            return;
+        }
+
+        var op = "";
+
+        op += "Current Screen ID: " + currentScreen.identifier() + "\n";
+
+
+        var candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
+
+        _.map(candidateOtherScreens, function(s) {
+            op += "Screen ID: " + s.identifier() + "\n" + JSON.stringify(s.flippedFrame()) + "\n";
+        });
+
+        var newScreenFrame = candidateOtherScreens[0].flippedFrame();
+
+        op += "New Screen Frame " + JSON.stringify(newScreenFrame) + "\n";
+
+        var newXOffset = newScreenFrame['x'];
+        var newYOffset = newScreenFrame['y'];
+
+        var oldFrame = window.frame();
+
+        // debug(candidateOtherScreens);
+
+        op += "Old Frame " + JSON.stringify(oldFrame) + "\n";
+
+        // debug(newYOffset);
+
+        var newFrame = {
+            x: newXOffset,
+            y: newYOffset,
+            width: oldFrame.width,
+            height: oldFrame.height
+        };
+
+        // debug(newFrame);
+
+        op += "New Frame " + JSON.stringify(newFrame) + "\n";
+        // windowMovedAlert(op);
+
+
+
+        alertModal("MOVE SCREEN");
+        window.setFrame(newFrame);
+
+
+        // Phoenix.notify(JSON.stringify(screen.flippedFrame()));
+        // Phoenix.notify(JSON.stringify(screen.identifier()));
+
+    };
+};
+
 
 
 function debug(o){
