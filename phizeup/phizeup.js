@@ -110,6 +110,9 @@ var setupHandlers = function(useSizeUpDefaults){
             new Key('keypad1',     modKeys1, putWindow('leftThird')),
             new Key('keypad2',     modKeys1, putWindow('centreThird')),
             new Key('keypad3',     modKeys1, putWindow('rightThird')),
+
+            new Key('keypad0',     modKeys1, putWindow('left2Thirds')),
+            new Key('keypad.',     modKeys1, putWindow('right2Thirds')),
         ],
 
         sixths: [
@@ -131,18 +134,12 @@ var setupHandlers = function(useSizeUpDefaults){
     };
 };
 
-
-var cool = [
-
-
-];
-
 var Movements = {
     up:          "½\n┏━━━┓\n┃┅╳┅┃\n┡━━━┩\n│┈┈┈│\n└───┘\nUp",
     down:        "½\n┌───┐\n│┈┈┈│\n┢━━━┪\n┃┅╳┅┃\n┗━━━┛\nDown",
 
-    left:        "½\n┏━┱─┐\n┃┋┃┈│\n┃╳┃┈│\n┃┋┃┈│\n┗━┹─┘\nLeft",
-    right:       "½\n┌─┲━┓\n│┈┃┋┃\n│┈┃╳┃\n│┈┃┋┃\n└─┺━┛\nRight",
+    left:        "½\n┏━┱─┐\n┃┅┃┈│\n┃╳┃┈│\n┃┅┃┈│\n┗━┹─┘\nLeft",
+    right:       "½\n┌─┲━┓\n│┈┃┅┃\n│┈┃╳┃\n│┈┃┅┃\n└─┺━┛\nRight",
 
     topLeft:     "¼\n┏━┱─┐\n┃╳┃┈│\n┡━╃─┤\n│┈│┈│\n└─┴─┘\nUp Left",
     topRight:    "¼\n┌─┲━┓\n│┈┃╳┃\n├─╄━┩\n│┈│┈│\n└─┴─┘\nUp Right",
@@ -152,9 +149,12 @@ var Movements = {
     maximised:   "1\n┏━━━┓\n┃┈┈┈┃\n┃┈╳┈┃\n┃┈┈┈┃\n┗━━━┛\nFull Screen",
     centre:      "¼\n┌───┐\n│┏━┓│\n│┃╳┃│\n│┗━┛│\n└───┘\nCentre",
 
-    leftThird:    "⅓\n┏━┱─┬─┐\n┃┋┃┈│┈│\n┃╳┃┈│┈│\n┃┋┃┈│┈│\n┗━┹─┴─┘\nLeft",
-    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┋┃┈│\n│┈┃╳┃┈│\n│┈┃┋┃┈│\n└─┺━┹─┘\nCentre",
-    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┋┃\n│┈│┈┃╳┃\n│┈│┈┃┋┃\n└─┴─┺━┛\nRight",
+    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘\nLeft",
+    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘\nCentre",
+    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛\nRight",
+
+    left2Thirds:  "⅔\n┏━━━┱─┐\n┃┅┅┅┃┈│\n┃┅╳┅┃┈│\n┃┅┅┅┃┈│\n┗━━━┹─┘\nLeft ⅔",
+    right2Thirds: "⅔\n┌─┲━━━┓\n│┈┃┅┅┅┃\n│┈┃┅╳┅┃\n│┈┃┅┅┅┃\n└─┺━━━┛\nRight ⅔",
 
     topLeftSix:   "⅙\n┏━┱─┬─┐\n┃╳┃┈│┈│\n┡━╃─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Left",
     topCentreSix: "⅙\n┌─┲━┱─┐\n│┈┃╳┃┈│\n├─╄━╃─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Centre",
@@ -279,6 +279,8 @@ var getSubFrame = function(parentFrame, direction) {
         leftThird:    { x: x(),                 y: y(),                 width: parentThird,    height: parentHeight   },
         centreThird:  { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHeight   },
         rightThird:   { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHeight   },
+        left2Thirds:  { x: x(),                 y: y(),                 width: parentTwoThirds, height: parentHeight  },
+        right2Thirds: { x: x(parentThird),      y: y(),                 width: parentTwoThirds, height: parentHeight  },
         topLeftSix:   { x: x(),                 y: y(),                 width: parentThird,    height: parentHalfHigh },
         topCentreSix: { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHalfHigh },
         topRightSix:  { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHalfHigh },
