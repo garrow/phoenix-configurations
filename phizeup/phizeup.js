@@ -54,7 +54,7 @@
  * Original keybinds and the SizeUp name - SizeUp - http://www.irradiatedsoftware.com/sizeup/
  *
  * TODO List:
- * - Add spaces and screens support.
+ * - Add spaces support.
  *
  * - Reuse the same modal object.
  * - Convert whole script to an object
