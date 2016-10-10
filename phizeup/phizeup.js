@@ -126,8 +126,15 @@ var setupHandlers = function(useSizeUpDefaults){
 
         quarters: quarters,
 
-        centre:      new Key('c',     modKeys1, putWindow('centre')),
-        maximised:   new Key('m',     modKeys1, maximise()),
+        centre: [
+            new Key('c',       modKeys1, putWindow('centre')),
+            new Key('keypad-', modKeys1, putWindow('centre'))
+        ],
+
+        maximised:[
+            new Key('m',       modKeys1, maximise()),
+            new Key('keypad+', modKeys1, maximise()),
+        ],
 
         screenNext: new Key('right',  screenKeys, putWindowScreen('next')),
         screenPrev: new Key('left',   screenKeys, putWindowScreen('previous')),
