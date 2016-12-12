@@ -115,6 +115,16 @@ var setupHandlers = function(useSizeUpDefaults){
             new Key('keypad.',     modKeys1, putWindow('right2Thirds')),
         ],
 
+        // Allows pushing window thirds without a numpad
+        thirds_small: [
+            new Key(',',     modKeys1, putWindow('leftThird')),
+            new Key('.',     modKeys1, putWindow('centreThird')),
+            new Key('/',     modKeys1, putWindow('rightThird')),
+
+            new Key(';',     modKeys1, putWindow('left2Thirds')),
+            new Key("'",     modKeys1, putWindow('right2Thirds')),
+        ],
+
         sixths: [
             new Key('keypad7', modKeys1, putWindow('topLeftSix')),
             new Key('keypad8', modKeys1, putWindow('topCentreSix')),
