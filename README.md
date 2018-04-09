@@ -1,6 +1,8 @@
 # phoenix-configurations
 My custom configurations for the Phoenix macOS window Manager, ( https://github.com/kasper/phoenix )
 
+The home repository for these configurations: https://github.com/garrow/phoenix-configurations
+
 # Configurations
 
 ### PhizeUp.js

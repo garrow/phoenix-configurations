@@ -1,6 +1,8 @@
 /**
  * PhizeUp.js - A reimplementation of basic SizeUp functionality using the Phoenix window manager.
  *
+  * The home repository for these configurations: https://github.com/garrow/phoenix-configurations
+ *
  *  Window partitions are as follows.
  *
  * +-----+-----+ +----------+ +-----+-----+ +--------------+
