@@ -367,19 +367,31 @@ var putWindowScreen = function(toScreen) {
             alertModal("NO SCREENS");
             return;
         }
+        // sort screens by position
+        screenList = _.sortBy(screenList, s => {
+        	return s.flippedFrame().x;
+        });
 
         var op = "";
 
         op += "Current Screen ID: " + currentScreen.identifier() + "\n";
 
-
-        var candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
-
-        _.map(candidateOtherScreens, function(s) {
-            op += "Screen ID: " + s.identifier() + "\n" + JSON.stringify(s.flippedFrame()) + "\n";
+        var currentScreenIndex;
+        _.forEach(screenList, (s, index) => {
+        	if(s.identifier() == currentScreen.identifier()){
+        		currentScreenIndex = index;
+        	}
         });
+        var nextScreenIndex;
+        if(toScreen === 'previous'){
+        	nextScreenIndex = currentScreenIndex - 1;
+        } else {
+        	// next
+        	nextScreenIndex = currentScreenIndex + 1;
+        }
+        nextScreenIndex = (nextScreenIndex + screenList.length) % screenList.length;
 
-        var newScreenFrame = candidateOtherScreens[0].flippedFrame();
+        var newScreenFrame = screenList[nextScreenIndex].flippedFrame();
 
         op += "New Screen Frame " + JSON.stringify(newScreenFrame) + "\n";
 
@@ -387,8 +399,6 @@ var putWindowScreen = function(toScreen) {
         var newYOffset = newScreenFrame['y'];
 
         var oldFrame = window.frame();
-
-        // debug(candidateOtherScreens);
 
         op += "Old Frame " + JSON.stringify(oldFrame) + "\n";
 
