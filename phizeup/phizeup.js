@@ -68,6 +68,12 @@
 
 "use strict";
 
+Phoenix.set({
+  daemon: false,
+  openAtLogin: true
+});
+
+
 /**
  * Configure PhizeUp's behaviour here.
  */
@@ -134,6 +140,19 @@ var setupHandlers = function(useSizeUpDefaults){
             new Key('keypad6', modKeys1, putWindow('botRightSix')),
         ],
 
+        sixUp: [
+            new Key('q', modKeys1, putWindow('sixUpTL')),
+            new Key('a', modKeys1, putWindow('sixUpML')),
+            new Key('z', modKeys1, putWindow('sixUpBL')),
+            new Key('w', modKeys1, putWindow('sixUpTR')),
+            new Key('s', modKeys1, putWindow('sixUpMR')),
+            new Key('x', modKeys1, putWindow('sixUpBR')),
+        ],
+        sixUpDouble: [
+            new Key('1', modKeys1, putWindow('sixUpTML')),
+            new Key('2', modKeys1, putWindow('sixUpTMR')),
+        ],
+
         quarters: quarters,
 
         centre: [
@@ -148,6 +167,15 @@ var setupHandlers = function(useSizeUpDefaults){
 
         screenNext: new Key('right',  screenKeys, putWindowScreen('next')),
         screenPrev: new Key('left',   screenKeys, putWindowScreen('previous')),
+
+        screenNext_: new Key(']',  modKeys1, putWindowScreen('next')),
+        screenPrev_: new Key('[',   modKeys1, putWindowScreen('previous')),
+
+
+
+      spaceNext: new Key('=', modKeys1, putWindowSpace('next')),
+      spacePrev: new Key('-',   modKeys1, putWindowSpace('previous')),
+
     };
 };
 
@@ -282,28 +310,41 @@ var getSubFrame = function(parentFrame, direction) {
     var parentHalfHigh = parentHeight / 2;
     var parentThird    = parentWidth / 3;
     var parentTwoThirds = parentThird * 2;
+    var parentThirdHigh = parentHeight / 3;
+    var parentTwoThirdsHigh = parentThirdHigh * 2;
 
     var subFrames = {
-        left:         { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHeight   },
-        right:        { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHeight   },
-        up:           { x: x(),                 y: y(),                 width: parentWidth,    height: parentHalfHigh },
-        down:         { x: x(),                 y: y(parentHalfHigh),   width: parentWidth,    height: parentHalfHigh },
-        topLeft:      { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHalfHigh },
-        bottomLeft:   { x: x(),                 y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
-        topRight:     { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHalfHigh },
-        bottomRight:  { x: x(parentHalfWide),   y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
-        centre:       { x: x(parentHalfWide/2), y: y(parentHalfHigh/2), width: parentHalfWide, height: parentHalfHigh },
-        leftThird:    { x: x(),                 y: y(),                 width: parentThird,    height: parentHeight   },
-        centreThird:  { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHeight   },
-        rightThird:   { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHeight   },
-        left2Thirds:  { x: x(),                 y: y(),                 width: parentTwoThirds, height: parentHeight  },
-        right2Thirds: { x: x(parentThird),      y: y(),                 width: parentTwoThirds, height: parentHeight  },
-        topLeftSix:   { x: x(),                 y: y(),                 width: parentThird,    height: parentHalfHigh },
-        topCentreSix: { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHalfHigh },
-        topRightSix:  { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHalfHigh },
-        botLeftSix:   { x: x(),                 y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
-        botCentreSix: { x: x(parentThird),      y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
-        botRightSix:  { x: x(parentTwoThirds),  y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh }
+        left:          { x:  x(),                 y: y(),                    width: parentHalfWide,   height: parentHeight   },
+        right:         { x:  x(parentHalfWide),   y: y(),                    width: parentHalfWide,   height: parentHeight   },
+        up:            { x:  x(),                 y: y(),                    width: parentWidth,      height: parentHalfHigh },
+        down:          { x:  x(),                 y: y(parentHalfHigh),      width: parentWidth,      height: parentHalfHigh },
+        topLeft:       { x:  x(),                 y: y(),                    width: parentHalfWide,   height: parentHalfHigh },
+        bottomLeft:    { x:  x(),                 y: y(parentHalfHigh),      width: parentHalfWide,   height: parentHalfHigh },
+        topRight:      { x:  x(parentHalfWide),   y: y(),                    width: parentHalfWide,   height: parentHalfHigh },
+        bottomRight:   { x:  x(parentHalfWide),   y: y(parentHalfHigh),      width: parentHalfWide,   height: parentHalfHigh },
+        centre:        { x:  x(parentHalfWide/2), y: y(parentHalfHigh/2),    width: parentHalfWide,   height: parentHalfHigh },
+        leftThird:     { x:  x(),                 y: y(),                    width: parentThird,      height: parentHeight   },
+        centreThird:   { x:  x(parentThird),      y: y(),                    width: parentThird,      height: parentHeight   },
+        rightThird:    { x:  x(parentTwoThirds),  y: y(),                    width: parentThird,      height: parentHeight   },
+        left2Thirds:   { x:  x(),                 y: y(),                    width: parentTwoThirds,  height: parentHeight  },
+        right2Thirds:  { x:  x(parentThird),      y: y(),                    width: parentTwoThirds,  height: parentHeight  },
+        topLeftSix:    { x:  x(),                 y: y(),                    width: parentThird,      height: parentHalfHigh },
+        topCentreSix:  { x:  x(parentThird),      y: y(),                    width: parentThird,      height: parentHalfHigh },
+        topRightSix:   { x:  x(parentTwoThirds),  y: y(),                    width: parentThird,      height: parentHalfHigh },
+        botLeftSix:    { x:  x(),                 y: y(parentHalfHigh),      width: parentThird,      height: parentHalfHigh },
+        botCentreSix:  { x:  x(parentThird),      y: y(parentHalfHigh),      width: parentThird,      height: parentHalfHigh },
+        botRightSix:   { x:  x(parentTwoThirds),  y: y(parentHalfHigh),      width: parentThird,      height: parentHalfHigh },
+        sixUpTL:       { x:  x(),                 y: y(),                    width: parentHalfWide,   height: parentThirdHigh },
+        sixUpML:       { x:  x(),                 y: y(parentThirdHigh),     width: parentHalfWide,   height: parentThirdHigh },
+        sixUpBL:       { x:  x(),                 y: y(parentTwoThirdsHigh), width: parentHalfWide,   height: parentThirdHigh },
+        sixUpTR:       { x:  x(parentHalfWide),   y: y(),                    width: parentHalfWide,   height: parentThirdHigh },
+        sixUpMR:       { x:  x(parentHalfWide),   y: y(parentThirdHigh),     width: parentHalfWide,   height: parentThirdHigh },
+        sixUpBR:       { x:  x(parentHalfWide),   y: y(parentTwoThirdsHigh), width: parentHalfWide,   height: parentThirdHigh },
+        sixUpTML:      { x:  x(),                 y: y(),                    width: parentHalfWide,   height:  parentTwoThirdsHigh },
+        sixUpTMR:      { x:  x(parentHalfWide), y: y(),                    width: parentHalfWide,   height:  parentTwoThirdsHigh },
+
+
+
     };
 
     return subFrames[direction];
@@ -348,6 +389,55 @@ var windowMovedAlert = function(message, window) {
     }
 };
 
+
+
+var putWindowSpace = function(destinationSpace) {
+  return function() {
+    return;
+    alertModal("SPAE_CHE_MAN " + destinationSpace)
+    var window = Window.focused();
+    
+    var allSpaces = Space.all();
+
+    if (allSpaces.length == 0) { 
+      alertModal("Unsupported or no spaces");
+      return;
+    }
+
+    var windowSpaces = window.spaces();
+
+    if (allSpaces.length == 0) { 
+      alertModal("Unsupported or no spaces");
+      return;
+    }
+
+
+    var realSpace = function(space) {
+      return isNormal() && ! isFullScreen();  
+    }
+    var realSpaces = _.filter(allSpaces, realSpace);
+
+
+
+    _.map(allSpaces, function(val, idx, col){
+    
+      val.removeWindows([window]);
+    })
+
+
+
+    _.map(realSpaces, function(val, idx, col){
+    
+      val.addWindows([window]);
+    })
+
+
+
+  };
+
+
+
+};
 
 var putWindowScreen = function(toScreen) {
     return function() {
