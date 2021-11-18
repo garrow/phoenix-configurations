@@ -70,24 +70,24 @@
 /**
  * Configure PhizeUp's behaviour here.
  */
-var config = {
+const config = {
     movementAlertDuration: 0.5,
     sizeUpDefaults: false
 };
 
-var multiKey = (alternates, modifiers, handler) => {
+const multiKey = (alternates, modifiers, handler) => {
     if (! Array.isArray(alternates)) {
         alternates = [alternates]
     } 
     return alternates.map((key) => { return new Key(key,  modifiers, handler) })
 }
 
-var setupHandlers = function(useSizeUpDefaults){
-    var modKeys1 =   ['ctrl', 'alt', 'cmd'],
-        modKeys2 =   ['ctrl', 'alt', 'shift'],
-        screenKeys = ['ctrl', 'alt'];
+const setupHandlers = function(useSizeUpDefaults){
+    const modKeys1   = ['ctrl', 'alt', 'cmd'],
+          modKeys2   = ['ctrl', 'alt', 'shift'],
+          screenKeys = ['ctrl', 'alt'];
 
-    var quarters;
+    let quarters;
 
     if (useSizeUpDefaults) {
         quarters = [
@@ -148,7 +148,7 @@ var setupHandlers = function(useSizeUpDefaults){
 // chunky ⬆︎⬇︎⬊⬈⬉⬋➡︎⬅︎
 // simple ↑↓←→↖︎↘︎↗︎↙︎
 
-var Movements = {
+const Movements = {
     up:          `½\n◼︎◼︎\n◻︎◻︎\n↑`,
     down:        `½\n◻︎◻︎\n◼︎◼︎\n↓`,
     left:        `½\n◼︎◻︎\n◼︎◻︎\n←`,
@@ -189,7 +189,7 @@ var Movements = {
  * @param action
  * @returns {*}
  */
-var withWindow = function withWindow(window, action) {
+const withWindow = function withWindow(window, action) {
     if (window) {
         return action(window);
     }
@@ -202,11 +202,11 @@ var withWindow = function withWindow(window, action) {
  * @param direction [Any Movement]
  * @returns {Function}
  */
-var putWindow = function(direction){
+const putWindow = function(direction){
     return function() {
 
         withWindow(Window.focused(), function(window) {
-            var screenFrame = window.screen().flippedFrame();
+            const screenFrame = window.screen().flippedFrame();
 
             windowMovedAlert(Movements.get(direction), window);
             setInSubFrame(window, screenFrame, direction);
@@ -221,9 +221,9 @@ var putWindow = function(direction){
  * @param parentFrame
  * @param direction
  */
-var setInSubFrame = function(window, parentFrame, direction) {
-    var _oldFrame = window.frame()
-    var newWindowFrame = getSubFrame(parentFrame, direction);
+const setInSubFrame = function(window, parentFrame, direction) {
+    const _oldFrame = window.frame()
+    const newWindowFrame = getSubFrame(parentFrame, direction);
 
     window.setFrame(newWindowFrame);
 };
@@ -232,7 +232,7 @@ var setInSubFrame = function(window, parentFrame, direction) {
  * Build and return a handler to maximise the focused window.
  * @returns {Function}
  */
-var maximise = function() {
+const maximise = function() {
     return function () {
         withWindow(Window.focused(), function(window){
             windowMovedAlert(Movements.maximised, window);
@@ -249,7 +249,7 @@ var maximise = function() {
  * @param direction
  * @returns {*} / Rectangle
  */
-var getSubFrame = function(parentFrame, direction) {
+const getSubFrame = function(parentFrame, direction) {
     /**
     * When using multiple screens, the current screen may be offset from the Zero point screen,
     * using the raw x,y coords blindly will mess up the positions.
@@ -261,27 +261,27 @@ var getSubFrame = function(parentFrame, direction) {
     * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
     * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
     **/
-    var parentX      = parentFrame.x;
-    var parentY      = parentFrame.y;
-    var fullWide  = parentFrame.width;
-    var fullHight = parentFrame.height;
+    const parentX      = parentFrame.x;
+    const parentY      = parentFrame.y;
+    const fullWide  = parentFrame.width;
+    const fullHight = parentFrame.height;
 
-    var change = function(original) {
+    const change = function(original) {
         return function(changeBy) {
-            var offset = changeBy || 0;
+            const offset = changeBy || 0;
             return Math.round(original + offset);
         };
     };
 
-    var y = change(parentY);
-    var x = change(parentX);
+    const y = change(parentY);
+    const x = change(parentX);
 
-    var narrow   = Math.round(fullWide / 2)
-    var halfHight  = Math.round(fullHight / 2);
-    var oneThird   = Math.round(fullWide / 3);
-    var twoThirds  = Math.round(oneThird * 2);
+    const narrow   = Math.round(fullWide / 2)
+    const halfHight  = Math.round(fullHight / 2);
+    const oneThird   = Math.round(fullWide / 3);
+    const twoThirds  = Math.round(oneThird * 2);
 
-    var subFrames = {
+    const subFrames = {
         left:         { y: y(),            x: x(),            width: narrow,   height: fullHight },
         right:        { y: y(),            x: x(narrow),      width: narrow,   height: fullHight },
         up:           { y: y(),            x: x(),            width: fullWide,   height: halfHight },
@@ -315,15 +315,15 @@ var getSubFrame = function(parentFrame, direction) {
  * @param onScreen
  * @returns {Modal}
  */
-var alertModal = function (message, onScreen) {
-    var alertModal         = new Modal();
+const alertModal = function (message, onScreen) {
+    const alertModal         = new Modal();
     alertModal.duration    = config.movementAlertDuration;
     alertModal.text        = message;
     alertModal.weight      = 30;
     alertModal.appearance  = 'dark';
 
-    var screenFrame     = (onScreen || Screen.main()).visibleFrame();
-    var alertFrame      = alertModal.frame();
+    const screenFrame     = (onScreen || Screen.main()).visibleFrame();
+    const alertFrame      = alertModal.frame();
 
     alertModal.origin = {
         x:  (screenFrame.x + (screenFrame.width * 0.5)) - (alertFrame.width * 0.5),
@@ -341,43 +341,43 @@ var alertModal = function (message, onScreen) {
  * @param message
  * @param window
  */
-var windowMovedAlert = function(message, window) {
+const windowMovedAlert = function(message, window) {
     if (window) {
         alertModal(message, window.screen());
     }
 };
 
 
-var putWindowScreen = function(toScreen, keepMaximised = false) {
+const putWindowScreen = function(toScreen, keepMaximised = false) {
     return function() {
-        var window = Window.focused();
+        const window = Window.focused();
 
         if (window == undefined) {
             alertModal("NO Windows for current app");
             return;
         }
 
-        var currentScreen = window.screen();
-        var screenList = Screen.all();
+        const currentScreen = window.screen();
+        const screenList = Screen.all();
 
         if (screenList.length < 2) {
             alertModal("NO SCREENS");
             return;
         }
 
-        var candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
+        const candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
 
-        var newScreen = candidateOtherScreens[0];
-        var newScreenFrame = newScreen.flippedVisibleFrame();
+        const newScreen = candidateOtherScreens[0];
+        const newScreenFrame = newScreen.flippedVisibleFrame();
 
-        var oldFrame = window.frame();
+        const oldFrame = window.frame();
 
-        var currentScreenFrame = currentScreen.visibleFrame()
+        const currentScreenFrame = currentScreen.visibleFrame()
 
-        var newX = newScreenFrame['x'];
-        var newY = newScreenFrame['y'];
-        var newWidth;
-        var newHeight;
+        const newX = newScreenFrame['x'];
+        const newY = newScreenFrame['y'];
+        let newWidth;
+        let newHeight;
 
         // Maximised
         if (keepMaximised && currentScreenFrame.width == oldFrame.width && currentScreenFrame.height == oldFrame.height) {
@@ -389,15 +389,15 @@ var putWindowScreen = function(toScreen, keepMaximised = false) {
             newHeight = Math.min(oldFrame.height, newScreenFrame.height)
         }
 
-        var newFrame = {
+        const newFrame = {
             y:      newY,
             x:      newX,
             width:  newWidth,
             height: newHeight
         };
 
-        var windowMovement = changeDirection(newFrame, oldFrame)
-        var message = `📺\n${windowMovement}`
+        const windowMovement = changeDirection(newFrame, oldFrame)
+        const message = `📺\n${windowMovement}`
 
         alertModal(message, currentScreen)
         alertModal(message, newScreen)
@@ -407,15 +407,15 @@ var putWindowScreen = function(toScreen, keepMaximised = false) {
 };
 
 // Given two frames, compare the x,y points, return a compass direction of the change.
-var changeDirection = function(newFrame, oldFrame) {
-    var xdir = Math.sign(newFrame.x - oldFrame.x)
-    var ydir = Math.sign(newFrame.y - oldFrame.y)
-    var directions = [
+const changeDirection = function(newFrame, oldFrame) {
+    const xdir = Math.sign(newFrame.x - oldFrame.x)
+    const ydir = Math.sign(newFrame.y - oldFrame.y)
+    const directions = [
         ['↖︎','↑','↗︎'],
         ['←','o','→'],
         ['↙︎','↓','↘︎'],
     ]
-    var dir = directions[ydir+1][xdir+1]
+    const dir = directions[ydir+1][xdir+1]
 
     return dir
 }
@@ -430,4 +430,4 @@ function debugscreen(){debug((Window.focused().screen().flippedFrame()))}
 
 
 // Phoenix requires us to keep a reference to the key handlers.
-var keyHandlers = setupHandlers(config.sizeUpDefaults);
+const keyHandlers = setupHandlers(config.sizeUpDefaults);
