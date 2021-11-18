@@ -139,8 +139,8 @@ var setupHandlers = function(useSizeUpDefaults){
             multiKey(['m',  'keypad+'], modKeys1, maximise()),
         ],
 
-        screenNext: multiKey('right',  screenKeys, putWindowScreen('next')),
-        screenPrev: multiKey('left',   screenKeys, putWindowScreen('previous')),
+        screenNext: multiKey(['left', 'right'],  screenKeys, putWindowScreen('next')),
+        screenPrev: multiKey(['left', 'right'],   modKeys2, putWindowScreen('anything', true)),
     };
 };
 
@@ -206,7 +206,7 @@ var putWindow = function(direction){
     return function() {
 
         withWindow(Window.focused(), function(window) {
-            var screenFrame = window.screen().flippedVisibleFrame();
+            var screenFrame = window.screen().flippedFrame();
 
             windowMovedAlert(Movements.get(direction), window);
             setInSubFrame(window, screenFrame, direction);
@@ -261,6 +261,11 @@ var getSubFrame = function(parentFrame, direction) {
     * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
     * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
     **/
+    var parentX      = parentFrame.x;
+    var parentY      = parentFrame.y;
+    var fullWide  = parentFrame.width;
+    var fullHight = parentFrame.height;
+
     var change = function(original) {
         return function(changeBy) {
             var offset = changeBy || 0;
@@ -343,7 +348,7 @@ var windowMovedAlert = function(message, window) {
 };
 
 
-var putWindowScreen = function(toScreen) {
+var putWindowScreen = function(toScreen, keepMaximised = false) {
     return function() {
         var window = Window.focused();
 
@@ -366,11 +371,29 @@ var putWindowScreen = function(toScreen) {
         var newScreenFrame = newScreen.flippedVisibleFrame();
 
         var oldFrame = window.frame();
+
+        var currentScreenFrame = currentScreen.visibleFrame()
+
+        var newX = newScreenFrame['x'];
+        var newY = newScreenFrame['y'];
+        var newWidth;
+        var newHeight;
+
+        // Maximised
+        if (keepMaximised && currentScreenFrame.width == oldFrame.width && currentScreenFrame.height == oldFrame.height) {
+            newWidth = newScreenFrame.width
+            newHeight = newScreenFrame.height
+        } else {
+        // Shrink to fit
+            newWidth = Math.min(oldFrame.width, newScreenFrame.width)
+            newHeight = Math.min(oldFrame.height, newScreenFrame.height)
+        }
+
         var newFrame = {
-            y: newScreenFrame['x'],
-            x: newScreenFrame['y'],
-            width: Math.min(oldFrame.width, newScreenFrame.width),
-            height: Math.min(oldFrame.height, newScreenFrame.height)
+            y:      newY,
+            x:      newX,
+            width:  newWidth,
+            height: newHeight
         };
 
         var windowMovement = changeDirection(newFrame, oldFrame)
