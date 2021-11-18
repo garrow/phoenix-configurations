@@ -75,17 +75,25 @@ const config = {
     sizeUpDefaults: false
 };
 
-const multiKey = (alternates, modifiers, handler) => {
-    if (! Array.isArray(alternates)) {
-        alternates = [alternates]
+const multiKey = (keys, modifiers, handler) => {
+    if (! Array.isArray(keys)) {
+        keys = [keys]
     }
-    return alternates.map((key) => { return new Key(key,  modifiers, handler) })
+    return keys.map((key) => { return new Key(key,  modifiers, handler) })
 }
+
+
 
 const setupHandlers = (useSizeUpDefaults) => {
     const modKeys1   = ['ctrl', 'alt', 'cmd'],
           modKeys2   = ['ctrl', 'alt', 'shift'],
           screenKeys = ['ctrl', 'alt'];
+
+    // Most common keybind, any of KEYS with modKeys1 to a new frame
+    const movement = (keys, windowMovement) => {
+        return multiKey(keys,  modKeys1, putWindow(windowMovement))
+    }
+
 
     let quarters;
 
@@ -99,48 +107,41 @@ const setupHandlers = (useSizeUpDefaults) => {
     } else {
         // The alternative keymap allows using the RTFG keys as diagonal directional arrows.
         quarters = [
-            multiKey('r', modKeys1, putWindow('topLeft')),
-            multiKey('t', modKeys1, putWindow('topRight')),
-            multiKey('f', modKeys1, putWindow('bottomLeft')),
-            multiKey('g', modKeys1, putWindow('bottomRight')),
+            movement('r', 'topLeft'),
+            movement('t', 'topRight'),
+            movement('f', 'bottomLeft'),
+            movement('g', 'bottomRight'),
         ]
     }
 
     return {
-        up:          multiKey('up',    modKeys1, putWindow('up')),
-        down:        multiKey('down',  modKeys1, putWindow('down')),
-        left:        multiKey('left',  modKeys1, putWindow('left')),
-        right:       multiKey('right', modKeys1, putWindow('right')),
-
-        thirds: [
-            multiKey([',', 'keypad1'],     modKeys1, putWindow('leftThird')),
-            multiKey(['.', 'keypad2'],     modKeys1, putWindow('centreThird')),
-            multiKey(['/', 'keypad3'],     modKeys1, putWindow('rightThird')),
-            multiKey([';','keypad0'],      modKeys1, putWindow('left2Thirds')),
-            multiKey([`'`, 'keypad.'],     modKeys1, putWindow('right2Thirds')),
-        ],
-
-        sixths: [
-            multiKey(['u', 'keypad7'], modKeys1, putWindow('topLeftSix')),
-            multiKey(['i', 'keypad8'], modKeys1, putWindow('topCentreSix')),
-            multiKey(['o', 'keypad9'], modKeys1, putWindow('topRightSix')),
-            multiKey(['j', 'keypad4'], modKeys1, putWindow('botLeftSix')),
-            multiKey(['k', 'keypad5'], modKeys1, putWindow('botCentreSix')),
-            multiKey(['l', 'keypad6'], modKeys1, putWindow('botRightSix')),
-        ],
-
         quarters: quarters,
-
-        centre: [
-            multiKey(['c','keypad-'],       modKeys1, putWindow('centre')),
+        halves: [
+            movement('up',    'up'),
+            movement('down',  'down'),
+            movement('left',  'left'),
+            movement('right', 'right'),
+        ],   
+        thirds: [
+            movement([',', 'keypad1'], 'leftThird'),
+            movement(['.', 'keypad2'], 'centreThird'),
+            movement(['/', 'keypad3'], 'rightThird'),
+            movement([';', 'keypad0'], 'left2Thirds'),
+            movement([`'`, 'keypad.'], 'right2Thirds'),
+        ],
+        sixths: [
+            movement(['u', 'keypad7'], 'topLeftSix'),
+            movement(['i', 'keypad8'], 'topCentreSix'),
+            movement(['o', 'keypad9'], 'topRightSix'),
+            movement(['j', 'keypad4'], 'botLeftSix'),
+            movement(['k', 'keypad5'], 'botCentreSix'),
+            movement(['l', 'keypad6'], 'botRightSix'),
         ],
 
-        maximised:[
-            multiKey(['m',  'keypad+'], modKeys1, maximise()),
-        ],
-
-        screenNext: multiKey(['left', 'right'],  screenKeys, putWindowScreen('next')),
-        screenPrev: multiKey(['left', 'right'],   modKeys2, putWindowScreen('anything', true)),
+        centre: movement(['c','keypad-'], 'centre'),
+        maximise: multiKey(['m',  'keypad+'], modKeys1, maximise()),
+        screenNext: multiKey(['left', 'right'], screenKeys, putWindowScreen('next')),
+        screenNextMax: multiKey(['left', 'right'], modKeys2, putWindowScreen('anything', true)),
     };
 };
 
