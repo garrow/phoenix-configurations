@@ -59,7 +59,6 @@
  * - Reuse the same modal object.
  * - Convert whole script to an object
  * - Simplify the configuration.
- * - Convert all movement messages to unicode box drawings.
  *
  * Known Bugs
  * - When resizing windows which define a minimum size (e.g. Spotify) when placed in a
@@ -76,6 +75,13 @@ var config = {
     sizeUpDefaults: false
 };
 
+var multiKey = (alternates, modifiers, handler) => {
+    if (! Array.isArray(alternates)) {
+        alternates = [alternates]
+    } 
+    return alternates.map((key) => { return new Key(key,  modifiers, handler) })
+}
+
 var setupHandlers = function(useSizeUpDefaults){
     var modKeys1 =   ['ctrl', 'alt', 'cmd'],
         modKeys2 =   ['ctrl', 'alt', 'shift'],
@@ -85,100 +91,90 @@ var setupHandlers = function(useSizeUpDefaults){
 
     if (useSizeUpDefaults) {
         quarters = [
-            new Key('left',  modKeys2, putWindow('topLeft')),
-            new Key('up',    modKeys2, putWindow('topRight')),
-            new Key('down',  modKeys2, putWindow('bottomLeft')),
-            new Key('right', modKeys2, putWindow('bottomRight')),
+            multiKey('left',  modKeys2, putWindow('topLeft')),
+            multiKey('up',    modKeys2, putWindow('topRight')),
+            multiKey('down',  modKeys2, putWindow('bottomLeft')),
+            multiKey('right', modKeys2, putWindow('bottomRight')),
         ]
     } else {
         // The alternative keymap allows using the RTFG keys as diagonal directional arrows.
         quarters = [
-            new Key('r', modKeys1, putWindow('topLeft')),
-            new Key('t', modKeys1, putWindow('topRight')),
-            new Key('f', modKeys1, putWindow('bottomLeft')),
-            new Key('g', modKeys1, putWindow('bottomRight')),
+            multiKey('r', modKeys1, putWindow('topLeft')),
+            multiKey('t', modKeys1, putWindow('topRight')),
+            multiKey('f', modKeys1, putWindow('bottomLeft')),
+            multiKey('g', modKeys1, putWindow('bottomRight')),
         ]
     }
 
     return {
-        up:          new Key('up',    modKeys1, putWindow('up')),
-        down:        new Key('down',  modKeys1, putWindow('down')),
-        left:        new Key('left',  modKeys1, putWindow('left')),
-        right:       new Key('right', modKeys1, putWindow('right')),
+        up:          multiKey('up',    modKeys1, putWindow('up')),
+        down:        multiKey('down',  modKeys1, putWindow('down')),
+        left:        multiKey('left',  modKeys1, putWindow('left')),
+        right:       multiKey('right', modKeys1, putWindow('right')),
 
         thirds: [
-            new Key('keypad1',     modKeys1, putWindow('leftThird')),
-            new Key('keypad2',     modKeys1, putWindow('centreThird')),
-            new Key('keypad3',     modKeys1, putWindow('rightThird')),
-
-            new Key('keypad0',     modKeys1, putWindow('left2Thirds')),
-            new Key('keypad.',     modKeys1, putWindow('right2Thirds')),
-        ],
-
-        // Allows pushing window thirds without a numpad
-        thirds_small: [
-            new Key(',',     modKeys1, putWindow('leftThird')),
-            new Key('.',     modKeys1, putWindow('centreThird')),
-            new Key('/',     modKeys1, putWindow('rightThird')),
-
-            new Key(';',     modKeys1, putWindow('left2Thirds')),
-            new Key("'",     modKeys1, putWindow('right2Thirds')),
+            multiKey([',', 'keypad1'],     modKeys1, putWindow('leftThird')),
+            multiKey(['.', 'keypad2'],     modKeys1, putWindow('centreThird')),
+            multiKey(['/', 'keypad3'],     modKeys1, putWindow('rightThird')),
+            multiKey([';','keypad0'],      modKeys1, putWindow('left2Thirds')),
+            multiKey([`'`, 'keypad.'],     modKeys1, putWindow('right2Thirds')),
         ],
 
         sixths: [
-            new Key('keypad7', modKeys1, putWindow('topLeftSix')),
-            new Key('keypad8', modKeys1, putWindow('topCentreSix')),
-            new Key('keypad9', modKeys1, putWindow('topRightSix')),
-            new Key('keypad4', modKeys1, putWindow('botLeftSix')),
-            new Key('keypad5', modKeys1, putWindow('botCentreSix')),
-            new Key('keypad6', modKeys1, putWindow('botRightSix')),
+            multiKey(['u', 'keypad7'], modKeys1, putWindow('topLeftSix')),
+            multiKey(['i', 'keypad8'], modKeys1, putWindow('topCentreSix')),
+            multiKey(['o', 'keypad9'], modKeys1, putWindow('topRightSix')),
+            multiKey(['j', 'keypad4'], modKeys1, putWindow('botLeftSix')),
+            multiKey(['k', 'keypad5'], modKeys1, putWindow('botCentreSix')),
+            multiKey(['l', 'keypad6'], modKeys1, putWindow('botRightSix')),
         ],
 
         quarters: quarters,
 
         centre: [
-            new Key('c',       modKeys1, putWindow('centre')),
-            new Key('keypad-', modKeys1, putWindow('centre'))
+            multiKey(['c','keypad-'],       modKeys1, putWindow('centre')),
         ],
 
         maximised:[
-            new Key('m',       modKeys1, maximise()),
-            new Key('keypad+', modKeys1, maximise()),
+            multiKey(['m',  'keypad+'], modKeys1, maximise()),
         ],
 
-        screenNext: new Key('right',  screenKeys, putWindowScreen('next')),
-        screenPrev: new Key('left',   screenKeys, putWindowScreen('previous')),
+        screenNext: multiKey('right',  screenKeys, putWindowScreen('next')),
+        screenPrev: multiKey('left',   screenKeys, putWindowScreen('previous')),
     };
 };
 
+// double ⇦⇧⇨⇩⇖⇗⇘⇙⤄
+// chunky ⬆︎⬇︎⬊⬈⬉⬋➡︎⬅︎
+// simple ↑↓←→↖︎↘︎↗︎↙︎
+
 var Movements = {
-    up:          "½\n┏━━━┓\n┃┅╳┅┃\n┡━━━┩\n│┈┈┈│\n└───┘\nUp",
-    down:        "½\n┌───┐\n│┈┈┈│\n┢━━━┪\n┃┅╳┅┃\n┗━━━┛\nDown",
+    up:          `½\n◼︎◼︎\n◻︎◻︎\n↑`,
+    down:        `½\n◻︎◻︎\n◼︎◼︎\n↓`,
+    left:        `½\n◼︎◻︎\n◼︎◻︎\n←`,
+    right:       `½\n◻︎◼︎\n◻︎◼︎\n→`,
 
-    left:        "½\n┏━┱─┐\n┃┅┃┈│\n┃╳┃┈│\n┃┅┃┈│\n┗━┹─┘\nLeft",
-    right:       "½\n┌─┲━┓\n│┈┃┅┃\n│┈┃╳┃\n│┈┃┅┃\n└─┺━┛\nRight",
+    topLeft:     "¼\n◼︎◻︎\n◻︎◻︎\n↖︎",
+    topRight:    "¼\n◻︎◼︎\n◻︎◻︎\n↗︎",
+    bottomLeft:  "¼\n◻︎◻︎\n◼︎◻︎\n↙︎",
+    bottomRight: "¼\n◻︎◻︎\n◻︎◼︎\n↘︎",
 
-    topLeft:     "¼\n┏━┱─┐\n┃╳┃┈│\n┡━╃─┤\n│┈│┈│\n└─┴─┘\nUp Left",
-    topRight:    "¼\n┌─┲━┓\n│┈┃╳┃\n├─╄━┩\n│┈│┈│\n└─┴─┘\nUp Right",
-    bottomLeft:  "¼\n┌─┬─┐\n│┈│┈│\n┢━╅─┤\n┃╳┃┈│\n┗━┹─┘\nDown Left",
-    bottomRight: "¼\n┌─┬─┐\n│┈│┈│\n├─╆━┪\n│┈┃╳┃\n└─┺━┛\nDown Right",
+    maximised:    "↖︎↑↗︎\n←◼︎→\n↙︎↓↘︎",
+    centre:       "↘︎↓↙︎\n→⧈←\n↗︎↑↖︎",
 
-    maximised:   "1\n┏━━━┓\n┃┈┈┈┃\n┃┈╳┈┃\n┃┈┈┈┃\n┗━━━┛\nFull Screen",
-    centre:      "¼\n┌───┐\n│┏━┓│\n│┃╳┃│\n│┗━┛│\n└───┘\nCentre",
+    leftThird:    "⅓\n◼︎◻︎◻︎\n◼︎◻︎◻︎\n←",
+    centreThird:  "⅓\n◻︎◼︎◻︎\n◻︎◼︎◻︎\n→←", /// ⇹ ⤄
+    rightThird:   "⅓\n◻︎◻︎◼︎\n◻︎◻︎◼︎\n→",
 
-    leftThird:    "⅓\n┏━┱─┬─┐\n┃┅┃┈│┈│\n┃╳┃┈│┈│\n┃┅┃┈│┈│\n┗━┹─┴─┘\nLeft",
-    centreThird:  "⅓\n┌─┲━┱─┐\n│┈┃┅┃┈│\n│┈┃╳┃┈│\n│┈┃┅┃┈│\n└─┺━┹─┘\nCentre",
-    rightThird:   "⅓\n┌─┬─┲━┓\n│┈│┈┃┅┃\n│┈│┈┃╳┃\n│┈│┈┃┅┃\n└─┴─┺━┛\nRight",
+    left2Thirds:  "⅔\n◼︎◼︎◻︎\n◼︎◼︎◻︎\n←",
+    right2Thirds: "⅔\n◻︎◼︎◼︎\n◻︎◼︎◼︎\n→",
 
-    left2Thirds:  "⅔\n┏━━━┱─┐\n┃┅┅┅┃┈│\n┃┅╳┅┃┈│\n┃┅┅┅┃┈│\n┗━━━┹─┘\nLeft ⅔",
-    right2Thirds: "⅔\n┌─┲━━━┓\n│┈┃┅┅┅┃\n│┈┃┅╳┅┃\n│┈┃┅┅┅┃\n└─┺━━━┛\nRight ⅔",
-
-    topLeftSix:   "⅙\n┏━┱─┬─┐\n┃╳┃┈│┈│\n┡━╃─┼─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Left",
-    topCentreSix: "⅙\n┌─┲━┱─┐\n│┈┃╳┃┈│\n├─╄━╃─┤\n│┈│┈│┈│\n└─┴─┴─┘\nUp Centre",
-    topRightSix:  "⅙\n┌─┬─┲━┓\n│┈│┈┃╳┃\n├─┼─╄━┩\n│┈│┈│┈│\n└─┴─┴─┘\nUp Right",
-    botLeftSix:   "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n┢━╅─┼─┤\n┃╳┃┈│┈│\n┗━┹─┴─┘\nDown Left",
-    botCentreSix: "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─╆━╅─┤\n│┈┃╳┃┈│\n└─┺━┹─┘\nDown Centre",
-    botRightSix:  "⅙\n┌─┬─┬─┐\n│┈│┈│┈│\n├─┼─╆━┪\n│┈│┈┃╳┃\n└─┴─┺━┛\nDown Right",
+    topLeftSix:   "⅙\n◼︎◻︎◻︎\n◻︎◻︎◻︎\n↖︎",
+    topCentreSix: "⅙\n◻︎◼◻︎\n◻︎◻︎◻︎\n↑",
+    topRightSix:  "⅙\n◻︎◻︎◼\n◻︎◻︎◻︎\n↗︎",
+    botLeftSix:   "⅙\n◻︎◻︎◻︎\n◼◻︎◻︎\n↙︎",
+    botCentreSix: "⅙\n◻︎◻︎◻︎\n◻︎◼◻︎\n↓",
+    botRightSix:  "⅙\n◻︎◻︎◻︎\n◻︎◻︎◼\n↘︎",
 
     // Safely fall back to a plain text label.
     get: function(direction) {
@@ -210,7 +206,7 @@ var putWindow = function(direction){
     return function() {
 
         withWindow(Window.focused(), function(window) {
-            var screenFrame = window.screen().flippedFrame();
+            var screenFrame = window.screen().flippedVisibleFrame();
 
             windowMovedAlert(Movements.get(direction), window);
             setInSubFrame(window, screenFrame, direction);
@@ -226,7 +222,9 @@ var putWindow = function(direction){
  * @param direction
  */
 var setInSubFrame = function(window, parentFrame, direction) {
+    var _oldFrame = window.frame()
     var newWindowFrame = getSubFrame(parentFrame, direction);
+
     window.setFrame(newWindowFrame);
 };
 
@@ -252,11 +250,6 @@ var maximise = function() {
  * @returns {*} / Rectangle
  */
 var getSubFrame = function(parentFrame, direction) {
-    var parentX      = parentFrame.x;
-    var parentY      = parentFrame.y;
-    var parentWidth  = parentFrame.width;
-    var parentHeight = parentFrame.height;
-
     /**
     * When using multiple screens, the current screen may be offset from the Zero point screen,
     * using the raw x,y coords blindly will mess up the positions.
@@ -271,39 +264,39 @@ var getSubFrame = function(parentFrame, direction) {
     var change = function(original) {
         return function(changeBy) {
             var offset = changeBy || 0;
-            return original + offset;
+            return Math.round(original + offset);
         };
     };
 
     var y = change(parentY);
     var x = change(parentX);
 
-    var parentHalfWide = parentWidth / 2;
-    var parentHalfHigh = parentHeight / 2;
-    var parentThird    = parentWidth / 3;
-    var parentTwoThirds = parentThird * 2;
+    var narrow   = Math.round(fullWide / 2)
+    var halfHight  = Math.round(fullHight / 2);
+    var oneThird   = Math.round(fullWide / 3);
+    var twoThirds  = Math.round(oneThird * 2);
 
     var subFrames = {
-        left:         { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHeight   },
-        right:        { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHeight   },
-        up:           { x: x(),                 y: y(),                 width: parentWidth,    height: parentHalfHigh },
-        down:         { x: x(),                 y: y(parentHalfHigh),   width: parentWidth,    height: parentHalfHigh },
-        topLeft:      { x: x(),                 y: y(),                 width: parentHalfWide, height: parentHalfHigh },
-        bottomLeft:   { x: x(),                 y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
-        topRight:     { x: x(parentHalfWide),   y: y(),                 width: parentHalfWide, height: parentHalfHigh },
-        bottomRight:  { x: x(parentHalfWide),   y: y(parentHalfHigh),   width: parentHalfWide, height: parentHalfHigh },
-        centre:       { x: x(parentHalfWide/2), y: y(parentHalfHigh/2), width: parentHalfWide, height: parentHalfHigh },
-        leftThird:    { x: x(),                 y: y(),                 width: parentThird,    height: parentHeight   },
-        centreThird:  { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHeight   },
-        rightThird:   { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHeight   },
-        left2Thirds:  { x: x(),                 y: y(),                 width: parentTwoThirds, height: parentHeight  },
-        right2Thirds: { x: x(parentThird),      y: y(),                 width: parentTwoThirds, height: parentHeight  },
-        topLeftSix:   { x: x(),                 y: y(),                 width: parentThird,    height: parentHalfHigh },
-        topCentreSix: { x: x(parentThird),      y: y(),                 width: parentThird,    height: parentHalfHigh },
-        topRightSix:  { x: x(parentTwoThirds),  y: y(),                 width: parentThird,    height: parentHalfHigh },
-        botLeftSix:   { x: x(),                 y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
-        botCentreSix: { x: x(parentThird),      y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh },
-        botRightSix:  { x: x(parentTwoThirds),  y: y(parentHalfHigh),   width: parentThird,    height: parentHalfHigh }
+        left:         { y: y(),            x: x(),            width: narrow,   height: fullHight },
+        right:        { y: y(),            x: x(narrow),      width: narrow,   height: fullHight },
+        up:           { y: y(),            x: x(),            width: fullWide,   height: halfHight },
+        down:         { y: y(halfHight),   x: x(),            width: fullWide,   height: halfHight },
+        topLeft:      { y: y(),            x: x(),            width: narrow,   height: halfHight },
+        bottomLeft:   { y: y(halfHight),   x: x(),            width: narrow,   height: halfHight },
+        topRight:     { y: y(),            x: x(narrow),      width: narrow,   height: halfHight },
+        bottomRight:  { y: y(halfHight),   x: x(narrow),      width: narrow,   height: halfHight },
+        centre:       { y: y(halfHight/2), x: x(narrow/2),    width: narrow,   height: halfHight },
+        leftThird:    { y: y(),            x: x(),            width: oneThird,   height: fullHight },
+        centreThird:  { y: y(),            x: x(oneThird),    width: oneThird,   height: fullHight },
+        rightThird:   { y: y(),            x: x(twoThirds),   width: oneThird,   height: fullHight },
+        left2Thirds:  { y: y(),            x: x(),            width: twoThirds,  height: fullHight },
+        right2Thirds: { y: y(),            x: x(oneThird),    width: twoThirds,  height: fullHight },
+        topLeftSix:   { y: y(),            x: x(),            width: oneThird,   height: halfHight },
+        topCentreSix: { y: y(),            x: x(oneThird),    width: oneThird,   height: halfHight },
+        topRightSix:  { y: y(),            x: x(twoThirds),   width: oneThird,   height: halfHight },
+        botLeftSix:   { y: y(halfHight),   x: x(),            width: oneThird,   height: halfHight },
+        botCentreSix: { y: y(halfHight),   x: x(oneThird),    width: oneThird,   height: halfHight },
+        botRightSix:  { y: y(halfHight),   x: x(twoThirds),   width: oneThird,   height: halfHight }
     };
 
     return subFrames[direction];
@@ -321,9 +314,10 @@ var alertModal = function (message, onScreen) {
     var alertModal         = new Modal();
     alertModal.duration    = config.movementAlertDuration;
     alertModal.text        = message;
+    alertModal.weight      = 30;
     alertModal.appearance  = 'dark';
 
-    var screenFrame     = (onScreen || Screen.main()).frame();
+    var screenFrame     = (onScreen || Screen.main()).visibleFrame();
     var alertFrame      = alertModal.frame();
 
     alertModal.origin = {
@@ -353,12 +347,10 @@ var putWindowScreen = function(toScreen) {
     return function() {
         var window = Window.focused();
 
-
         if (window == undefined) {
             alertModal("NO Windows for current app");
             return;
         }
-
 
         var currentScreen = window.screen();
         var screenList = Screen.all();
@@ -368,55 +360,42 @@ var putWindowScreen = function(toScreen) {
             return;
         }
 
-        var op = "";
-
-        op += "Current Screen ID: " + currentScreen.identifier() + "\n";
-
-
         var candidateOtherScreens = _.reject(screenList, function(s){ return s.identifier() == currentScreen.identifier() });
 
-        _.map(candidateOtherScreens, function(s) {
-            op += "Screen ID: " + s.identifier() + "\n" + JSON.stringify(s.flippedFrame()) + "\n";
-        });
-
-        var newScreenFrame = candidateOtherScreens[0].flippedFrame();
-
-        op += "New Screen Frame " + JSON.stringify(newScreenFrame) + "\n";
-
-        var newXOffset = newScreenFrame['x'];
-        var newYOffset = newScreenFrame['y'];
+        var newScreen = candidateOtherScreens[0];
+        var newScreenFrame = newScreen.flippedVisibleFrame();
 
         var oldFrame = window.frame();
-
-        // debug(candidateOtherScreens);
-
-        op += "Old Frame " + JSON.stringify(oldFrame) + "\n";
-
-        // debug(newYOffset);
-
         var newFrame = {
-            x: newXOffset,
-            y: newYOffset,
-            width: oldFrame.width,
-            height: oldFrame.height
+            y: newScreenFrame['x'],
+            x: newScreenFrame['y'],
+            width: Math.min(oldFrame.width, newScreenFrame.width),
+            height: Math.min(oldFrame.height, newScreenFrame.height)
         };
 
-        // debug(newFrame);
+        var windowMovement = changeDirection(newFrame, oldFrame)
+        var message = `📺\n${windowMovement}`
 
-        op += "New Frame " + JSON.stringify(newFrame) + "\n";
-        // windowMovedAlert(op);
+        alertModal(message, currentScreen)
+        alertModal(message, newScreen)
 
-
-
-        alertModal("MOVE SCREEN");
         window.setFrame(newFrame);
-
-
-        // Phoenix.notify(JSON.stringify(screen.flippedFrame()));
-        // Phoenix.notify(JSON.stringify(screen.identifier()));
-
     };
 };
+
+// Given two frames, compare the x,y points, return a compass direction of the change.
+var changeDirection = function(newFrame, oldFrame) {
+    var xdir = Math.sign(newFrame.x - oldFrame.x)
+    var ydir = Math.sign(newFrame.y - oldFrame.y)
+    var directions = [
+        ['↖︎','↑','↗︎'],
+        ['←','o','→'],
+        ['↙︎','↓','↘︎'],
+    ]
+    var dir = directions[ydir+1][xdir+1]
+
+    return dir
+}
 
 
 
