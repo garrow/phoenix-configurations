@@ -148,11 +148,22 @@ const setupHandlers = (useSizeUpDefaults) => {
 // double ⇦⇧⇨⇩⇖⇗⇘⇙⤄
 // chunky ⬆︎⬇︎⬊⬈⬉⬋➡︎⬅︎
 // simple ↑↓←→↖︎↘︎↗︎↙︎
+//
+// `½
+// ◼︎◼︎
+// ◻︎◻︎
+// ↑`
+//
+// `½
+// ◼︎◼︎
+// ◻︎◻︎
+// ↑`
+
 
 const Movements = {
-  up:          `½\n◼︎◼︎\n◻︎◻︎\n↑`,
-  down:        `½\n◻︎◻︎\n◼︎◼︎\n↓`,
-  left:        `½\n◼︎◻︎\n◼︎◻︎\n←`,
+  up:          `½ ◼︎◼︎ ◻︎◻︎ ↑`,
+  down:        `½ ◻︎◻︎ ◼︎◼︎ ↓`,
+  left:        `½ ◼︎◻︎ ◼︎◻︎ ←`,
   right:       `½\n◻︎◼︎\n◻︎◼︎\n→`,
 
   topLeft:     "¼\n◼︎◻︎\n◻︎◻︎\n↖︎",
@@ -179,7 +190,7 @@ const Movements = {
 
   // Safely fall back to a plain text label.
   get(direction) {
-    return this[direction] || direction.toString();
+    return this[direction].split(' ').join("\n").replace(/ +/g,'') || direction.toString();
   },
 };
 
@@ -226,6 +237,8 @@ const setInSubFrame = (window, parentFrame, direction) => {
   const _oldFrame = window.frame()
   const newWindowFrame = getSubFrame(parentFrame, direction);
 
+  // alertInFrame(changeDirection(newWindowFrame, _oldFrame), _oldFrame, window.screen());
+  
   window.setFrame(newWindowFrame);
 };
 
@@ -277,7 +290,7 @@ const getSubFrame = (parentFrame, direction) => {
   const y = change(parentY);
   const x = change(parentX);
 
-  const narrow   = Math.round(fullWide / 2)
+  const narrow     = Math.round(fullWide / 2)
   const halfHight  = Math.round(fullHight / 2);
   const oneThird   = Math.round(fullWide / 3);
   const twoThirds  = Math.round(oneThird * 2);
@@ -318,10 +331,11 @@ const getSubFrame = (parentFrame, direction) => {
  */
 const alertModal = (message, onScreen) => {
   const alertModal       = new Modal();
+  alertModal.textAlignment = 'right' // 3.0.0 ? 'right' makes the text centered?
   alertModal.duration    = config.movementAlertDuration;
   alertModal.text        = message;
   alertModal.weight      = 30;
-  alertModal.appearance  = 'dark';
+  
 
   const screenFrame     = (onScreen || Screen.main()).visibleFrame();
   const alertFrame      = alertModal.frame();
@@ -336,6 +350,30 @@ const alertModal = (message, onScreen) => {
   return alertModal;
 };
 
+
+const alertInFrame = (message, inFrame, onScreen) => {
+  const alertInFrame       = new Modal();
+  alertInFrame.textAlignment = 'right' // 3.0.0 ? 'right' makes the text centered?
+  alertInFrame.duration    = config.movementAlertDuration;
+  alertInFrame.text        = message;
+  alertInFrame.weight      = 30;
+  
+
+  const screenFrame     = (onScreen || Screen.main()).visibleFrame();
+  const alertFrame      = alertInFrame.frame();
+
+  alertInFrame.origin = {
+    x:  (inFrame.x + (inFrame.width * 0.5)) - (alertFrame.width * 0.25),
+    y:  (inFrame.y + (inFrame.height * 0.5)) - (alertFrame.height * 0.25)
+  };
+
+  alertInFrame.show();
+
+  return alertInFrame;
+}
+
+
+
 /**
  * Places an alertModal on the screen the window was on, with the provided text message.
  *
@@ -349,6 +387,12 @@ const windowMovedAlert = (message, window) => {
 };
 
 
+/**
+ * Puts a window to a new screen.
+ *
+ * @param toScreen
+ * @param keepMaximised
+ */
 const putWindowScreen = (toScreen, keepMaximised = false) => {
   return () => {
     const window = Window.focused();
