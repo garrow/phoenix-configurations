@@ -142,6 +142,7 @@ const setupHandlers = (useSizeUpDefaults) => {
     maximise: multiKey(['m',  'keypad+'], modKeys1, maximise()),
     screenNext: multiKey(['left', 'right'], screenKeys, putWindowScreen('next')),
     screenNextMax: multiKey(['left', 'right'], modKeys2, putWindowScreen('anything', true)),
+    custom: multiKey(['b'], modKeys1, setInSizedFrame({width: 1728, height: 1085 + 29})), // MacOS VM Parallels
   };
 };
 
@@ -242,6 +243,27 @@ const setInSubFrame = (window, parentFrame, direction) => {
   window.setFrame(newWindowFrame);
 };
 
+
+const setInSizedFrame = (newWindowSize = {width: 1728, height: 1085}) => {
+    return () => {
+
+        withWindow(Window.focused(), (window) => {
+            const screenFrame = window.screen().flippedFrame();
+
+            const newWindowFrame = getCenteredSpecificSize(screenFrame, newWindowSize)
+            // const newWindowFrame = getSubFrame(parentFrame, direction);
+
+            // alertInFrame(changeDirection(newWindowFrame, _oldFrame), _oldFrame, window.screen());
+
+            window.setFrame(newWindowFrame);
+
+            windowMovedAlert(Movements.get('centre'), window);
+            // setInSubFrame(window, screenFrame, direction);
+        });
+    };
+};
+
+
 /**
  * Build and return a handler to maximise the focused window.
  * @returns {Function}
@@ -320,6 +342,50 @@ const getSubFrame = (parentFrame, direction) => {
 
   return subFrames[direction];
 };
+
+/**
+ * Build a subframe within a parent frame.
+ * This fn does the work of subdividing the rectangle. (screen)
+ *
+ * @param parentFrame
+ * @param desiredSize
+ * @returns {*} / Rectangle
+ */
+const getCenteredSpecificSize = (parentFrame, desiredSize) => {
+    /**
+     * When using multiple screens, the current screen may be offset from the Zero point screen,
+     * using the raw x,y coords blindly will mess up the positions.
+     * Instead, we offset the screen x,y, coords based on the original origin point of the screen.
+     *      |---|
+     *  |---|---|
+     * In this case we have two screens side by side, but aligned on the physical bottom edge.
+     * Remember that coords are origin 0,0 top left.
+     * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
+     * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
+     **/
+    const parentX = parentFrame.x;
+    const parentY = parentFrame.y;
+    const fullWide = parentFrame.width;
+    const fullHight = parentFrame.height;
+
+    const change = (original) => {
+        return (changeBy) => {
+            const offset = changeBy || 0;
+            return Math.round(original + offset);
+        };
+    };
+
+    const y = change(parentY);
+    const x = change(parentX);
+
+    const offsetWidth = Math.round(fullWide / 2) - Math.round(desiredSize.width / 2)
+    const offsetHeight = Math.round(fullHight / 2) - Math.round(desiredSize.height / 2)
+
+
+    return {y: y(offsetHeight), x: x(offsetWidth), width: desiredSize.width, height: desiredSize.height}
+};
+
+
 /**
  * Render a Phoenix Modal with a string message.
  *
@@ -371,7 +437,6 @@ const alertInFrame = (message, inFrame, onScreen) => {
 
   return alertInFrame;
 }
-
 
 
 /**
