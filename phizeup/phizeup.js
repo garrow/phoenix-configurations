@@ -142,7 +142,7 @@ const setupHandlers = (useSizeUpDefaults) => {
     maximise: multiKey(['m',  'keypad+'], modKeys1, maximise()),
     screenNext: multiKey(['left', 'right'], screenKeys, putWindowScreen('next')),
     screenNextMax: multiKey(['left', 'right'], modKeys2, putWindowScreen('anything', true)),
-    custom: multiKey(['b'], modKeys1, setInSizedFrame({width: 1728, height: 1085 + 29})), // MacOS VM Parallels
+//    custom: multiKey(['b'], modKeys1, setInSizedFrame({width: 1728, height: 1085 + 29})), // MacOS VM Parallels
   };
 };
 
