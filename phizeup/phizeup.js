@@ -65,24 +65,20 @@
  *   small size at a screen edge may push onto another monitor.
  */
 
-"use strict";
+'use strict';
 
-/**
- * Configure PhizeUp's behaviour here.
- */
+/** Configure PhizeUp's behaviour here. */
 const config = {
   movementAlertDuration: 0.5,
   sizeUpDefaults: false
 };
 
 const multiKey = (keys, modifiers, handler) => {
-  if (! Array.isArray(keys)) {
-    keys = [keys]
+  if (!Array.isArray(keys)) {
+    keys = [keys];
   }
-  return keys.map((key) => { return new Key(key,  modifiers, handler) })
-}
-
-
+  return keys.map((key) => new Key(key, modifiers, handler));
+};
 
 const setupHandlers = (useSizeUpDefaults) => {
   const modKeys1   = ['ctrl', 'alt', 'cmd'],
@@ -91,9 +87,8 @@ const setupHandlers = (useSizeUpDefaults) => {
 
   // Most common keybind, any of KEYS with modKeys1 to a new frame
   const movement = (keys, windowMovement) => {
-    return multiKey(keys,  modKeys1, putWindow(windowMovement))
-  }
-
+    return multiKey(keys, modKeys1, putWindow(windowMovement));
+  };
 
   let quarters;
 
@@ -103,7 +98,7 @@ const setupHandlers = (useSizeUpDefaults) => {
       multiKey('up',    modKeys2, putWindow('topRight')),
       multiKey('down',  modKeys2, putWindow('bottomLeft')),
       multiKey('right', modKeys2, putWindow('bottomRight')),
-    ]
+    ];
   } else {
     // The alternative keymap allows using the RTFG keys as diagonal directional arrows.
     quarters = [
@@ -111,7 +106,7 @@ const setupHandlers = (useSizeUpDefaults) => {
       movement('t', 'topRight'),
       movement('f', 'bottomLeft'),
       movement('g', 'bottomRight'),
-    ]
+    ];
   }
 
   return {
@@ -137,15 +132,15 @@ const setupHandlers = (useSizeUpDefaults) => {
       movement(['k', 'keypad5'], 'botCentreSix'),
       movement(['l', 'keypad6'], 'botRightSix'),
     ],
-
-    centre: movement(['c','keypad-'], 'centre'),
-    maximise: multiKey(['m',  'keypad+'], modKeys1, maximise()),
+    centre: movement(['c', 'keypad-'], 'centre'),
+    maximise: multiKey(['m', 'keypad+'], modKeys1, maximise()),
     screenNext: multiKey(['left', 'right'], screenKeys, putWindowScreen('next')),
     screenNextMax: multiKey(['left', 'right'], modKeys2, putWindowScreen('anything', true)),
-//    custom: multiKey(['b'], modKeys1, setInSizedFrame({width: 1728, height: 1085 + 29})), // MacOS VM Parallels
   };
 };
 
+// SIDEBAR - arrow experiments
+//
 // double ⇦⇧⇨⇩⇖⇗⇘⇙⤄
 // chunky ⬆︎⬇︎⬊⬈⬉⬋➡︎⬅︎
 // simple ↑↓←→↖︎↘︎↗︎↙︎
@@ -160,114 +155,135 @@ const setupHandlers = (useSizeUpDefaults) => {
 // ◻︎◻︎
 // ↑`
 
-
 const Movements = {
   up:          `½ ◼︎◼︎ ◻︎◻︎ ↑`,
   down:        `½ ◻︎◻︎ ◼︎◼︎ ↓`,
   left:        `½ ◼︎◻︎ ◼︎◻︎ ←`,
   right:       `½\n◻︎◼︎\n◻︎◼︎\n→`,
 
-  topLeft:     "¼\n◼︎◻︎\n◻︎◻︎\n↖︎",
-  topRight:    "¼\n◻︎◼︎\n◻︎◻︎\n↗︎",
-  bottomLeft:  "¼\n◻︎◻︎\n◼︎◻︎\n↙︎",
-  bottomRight: "¼\n◻︎◻︎\n◻︎◼︎\n↘︎",
+  topLeft:     '¼\n◼︎◻︎\n◻︎◻︎\n↖︎',
+  topRight:    '¼\n◻︎◼︎\n◻︎◻︎\n↗︎',
+  bottomLeft:  '¼\n◻︎◻︎\n◼︎◻︎\n↙︎',
+  bottomRight: '¼\n◻︎◻︎\n◻︎◼︎\n↘︎',
 
-  maximised:    "↖︎↑↗︎\n←◼︎→\n↙︎↓↘︎",
-  centre:       "↘︎↓↙︎\n→⧈←\n↗︎↑↖︎",
+  maximised:    '↖︎↑↗︎\n←◼︎→\n↙︎↓↘︎',
+  centre:       '↘︎↓↙︎\n→⧈←\n↗︎↑↖︎',
 
-  leftThird:    "⅓\n◼︎◻︎◻︎\n◼︎◻︎◻︎\n←",
-  centreThird:  "⅓\n◻︎◼︎◻︎\n◻︎◼︎◻︎\n→←", /// ⇹ ⤄
-  rightThird:   "⅓\n◻︎◻︎◼︎\n◻︎◻︎◼︎\n→",
+  leftThird:    '⅓\n◼︎◻︎◻︎\n◼︎◻︎◻︎\n←',
+  centreThird:  '⅓\n◻︎◼︎◻︎\n◻︎◼︎◻︎\n→←',
+  rightThird:   '⅓\n◻︎◻︎◼︎\n◻︎◻︎◼︎\n→',
 
-  left2Thirds:  "⅔\n◼︎◼︎◻︎\n◼︎◼︎◻︎\n←",
-  right2Thirds: "⅔\n◻︎◼︎◼︎\n◻︎◼︎◼︎\n→",
+  left2Thirds:  '⅔\n◼︎◼︎◻︎\n◼︎◼︎◻︎\n←',
+  right2Thirds: '⅔\n◻︎◼︎◼︎\n◻︎◼︎◼︎\n→',
 
-  topLeftSix:   "⅙\n◼︎◻︎◻︎\n◻︎◻︎◻︎\n↖︎",
-  topCentreSix: "⅙\n◻︎◼◻︎\n◻︎◻︎◻︎\n↑",
-  topRightSix:  "⅙\n◻︎◻︎◼\n◻︎◻︎◻︎\n↗︎",
-  botLeftSix:   "⅙\n◻︎◻︎◻︎\n◼◻︎◻︎\n↙︎",
-  botCentreSix: "⅙\n◻︎◻︎◻︎\n◻︎◼◻︎\n↓",
-  botRightSix:  "⅙\n◻︎◻︎◻︎\n◻︎◻︎◼\n↘︎",
+  topLeftSix:   '⅙\n◼︎◻︎◻︎\n◻︎◻︎◻︎\n↖︎',
+  topCentreSix: '⅙\n◻︎◼◻︎\n◻︎◻︎◻︎\n↑',
+  topRightSix:  '⅙\n◻︎◻︎◼\n◻︎◻︎◻︎\n↗︎',
+  botLeftSix:   '⅙\n◻︎◻︎◻︎\n◼◻︎◻︎\n↙︎',
+  botCentreSix: '⅙\n◻︎◻︎◻︎\n◻︎◼◻︎\n↓',
+  botRightSix:  '⅙\n◻︎◻︎◻︎\n◻︎◻︎◼\n↘︎',
 
   // Safely fall back to a plain text label.
   get(direction) {
-    return this[direction].split(' ').join("\n").replace(/ +/g,'') || direction.toString();
+    try {
+      return this[direction].split(' ').join('\n').replace(/ +/g, '') || direction.toString();
+    } catch {
+      return String(direction);
+    }
   },
 };
 
-/**
- * Sometimes a window doesn't actually exist.
- *
- * @param window
- * @param action
- * @returns {*}
- */
+// Sometimes a window doesn't actually exist.
 const withWindow = (window, action) => {
   if (window) {
-    return action(window);
+    action(window);
+    return;
   }
-  alertModal("Nothing to move");
+  alertModal('Nothing to move');
 };
 
-/**
- * Build and return a handler which puts the focused (active) window into a position on that window's current screen.
- *
- * @param direction [Any Movement]
- * @returns {Function}
- */
 const putWindow = (direction) => {
   return () => {
-
     withWindow(Window.focused(), (window) => {
       const screenFrame = window.screen().flippedFrame();
-
       windowMovedAlert(Movements.get(direction), window);
       setInSubFrame(window, screenFrame, direction);
     });
   };
 };
 
-/**
- * Place the window into a subframe inside the parent frame.
- *
- * @param window
- * @param parentFrame
- * @param direction
- */
 const setInSubFrame = (window, parentFrame, direction) => {
-  const _oldFrame = window.frame()
   const newWindowFrame = getSubFrame(parentFrame, direction);
-
-  // alertInFrame(changeDirection(newWindowFrame, _oldFrame), _oldFrame, window.screen());
-  
   window.setFrame(newWindowFrame);
 };
 
-
-const setInSizedFrame = (newWindowSize = {width: 1728, height: 1085}) => {
-    return () => {
-
-        withWindow(Window.focused(), (window) => {
-            const screenFrame = window.screen().flippedFrame();
-
-            const newWindowFrame = getCenteredSpecificSize(screenFrame, newWindowSize)
-            // const newWindowFrame = getSubFrame(parentFrame, direction);
-
-            // alertInFrame(changeDirection(newWindowFrame, _oldFrame), _oldFrame, window.screen());
-
-            window.setFrame(newWindowFrame);
-
-            windowMovedAlert(Movements.get('centre'), window);
-            // setInSubFrame(window, screenFrame, direction);
-        });
-    };
+/**
+ * Parse a screen frame into offset helpers and dimensions.
+ *
+ * Multi-monitor setups offset each screen from a shared origin. Raw x,y from
+ * a non-primary screen are non-zero, so all positioning must be relative to
+ * the screen's own origin.
+ *
+ *      |---|
+ *  |---|---|
+ * screen 1: { x: 0, y: 0, width: 800, height: 600 }
+ * screen 2: { x: 800, y: -600, width: 1600, height: 1200 }
+ */
+const frameMetrics = (parentFrame) => {
+  const x = (offset) => Math.round(parentFrame.x + (offset || 0));
+  const y = (offset) => Math.round(parentFrame.y + (offset || 0));
+  return { x, y, width: parentFrame.width, height: parentFrame.height };
 };
 
+/**
+ * Subdivide a parent frame (screen) into a named sub-region.
+ */
+const getSubFrame = (parentFrame, direction) => {
+  const { x, y, width, height } = frameMetrics(parentFrame);
+
+  const narrow     = Math.round(width / 2);
+  const halfHeight = Math.round(height / 2);
+  const oneThird   = Math.round(width / 3);
+  const twoThirds  = Math.round(oneThird * 2);
+
+  const subFrames = {
+    left:         { y: y(),            x: x(),          width: narrow,    height: height     },
+    right:        { y: y(),            x: x(narrow),    width: narrow,    height: height     },
+    up:           { y: y(),            x: x(),          width: width,     height: halfHeight },
+    down:         { y: y(halfHeight),  x: x(),          width: width,     height: halfHeight },
+    topLeft:      { y: y(),            x: x(),          width: narrow,    height: halfHeight },
+    bottomLeft:   { y: y(halfHeight),  x: x(),          width: narrow,    height: halfHeight },
+    topRight:     { y: y(),            x: x(narrow),    width: narrow,    height: halfHeight },
+    bottomRight:  { y: y(halfHeight),  x: x(narrow),    width: narrow,    height: halfHeight },
+    centre:       { y: y(halfHeight/2),x: x(narrow/2),  width: narrow,    height: halfHeight },
+    leftThird:    { y: y(),            x: x(),          width: oneThird,  height: height     },
+    centreThird:  { y: y(),            x: x(oneThird),  width: oneThird,  height: height     },
+    rightThird:   { y: y(),            x: x(twoThirds), width: oneThird,  height: height     },
+    left2Thirds:  { y: y(),            x: x(),          width: twoThirds, height: height     },
+    right2Thirds: { y: y(),            x: x(oneThird),  width: twoThirds, height: height     },
+    topLeftSix:   { y: y(),            x: x(),          width: oneThird,  height: halfHeight },
+    topCentreSix: { y: y(),            x: x(oneThird),  width: oneThird,  height: halfHeight },
+    topRightSix:  { y: y(),            x: x(twoThirds), width: oneThird,  height: halfHeight },
+    botLeftSix:   { y: y(halfHeight),  x: x(),          width: oneThird,  height: halfHeight },
+    botCentreSix: { y: y(halfHeight),  x: x(oneThird),  width: oneThird,  height: halfHeight },
+    botRightSix:  { y: y(halfHeight),  x: x(twoThirds), width: oneThird,  height: halfHeight },
+  };
+
+  return subFrames[direction];
+};
 
 /**
- * Build and return a handler to maximise the focused window.
- * @returns {Function}
+ * Build a centered frame of a specific size within a parent frame.
  */
+const getCenteredSpecificSize = (parentFrame, desiredSize) => {
+  const { x, y, width, height } = frameMetrics(parentFrame);
+
+  const offsetWidth  = Math.round(width / 2) - Math.round(desiredSize.width / 2);
+  const offsetHeight = Math.round(height / 2) - Math.round(desiredSize.height / 2);
+
+  return { y: y(offsetHeight), x: x(offsetWidth), width: desiredSize.width, height: desiredSize.height };
+};
+
 const maximise = () => {
   return () => {
     withWindow(Window.focused(), (window) => {
@@ -278,192 +294,42 @@ const maximise = () => {
 };
 
 /**
- * Build a subframe within a parent frame.
- * This fn does the work of subdividing the rectangle. (screen)
- *
- * @param parentFrame
- * @param direction
- * @returns {*} / Rectangle
- */
-const getSubFrame = (parentFrame, direction) => {
-  /**
-  * When using multiple screens, the current screen may be offset from the Zero point screen,
-  * using the raw x,y coords blindly will mess up the positions.
-  * Instead, we offset the screen x,y, coords based on the original origin point of the screen.
-  *      |---|
-  *  |---|---|
-  * In this case we have two screens side by side, but aligned on the physical bottom edge.
-  * Remember that coords are origin 0,0 top left.
-  * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
-  * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
-  **/
-  const parentX   = parentFrame.x;
-  const parentY   = parentFrame.y;
-  const fullWide  = parentFrame.width;
-  const fullHight = parentFrame.height;
-
-  const change = (original) => {
-    return (changeBy) => {
-      const offset = changeBy || 0;
-      return Math.round(original + offset);
-    };
-  };
-
-  const y = change(parentY);
-  const x = change(parentX);
-
-  const narrow     = Math.round(fullWide / 2)
-  const halfHight  = Math.round(fullHight / 2);
-  const oneThird   = Math.round(fullWide / 3);
-  const twoThirds  = Math.round(oneThird * 2);
-
-  const subFrames = {
-    left:         { y: y(),            x: x(),          width: narrow,    height: fullHight },
-    right:        { y: y(),            x: x(narrow),    width: narrow,    height: fullHight },
-    up:           { y: y(),            x: x(),          width: fullWide,  height: halfHight },
-    down:         { y: y(halfHight),   x: x(),          width: fullWide,  height: halfHight },
-    topLeft:      { y: y(),            x: x(),          width: narrow,    height: halfHight },
-    bottomLeft:   { y: y(halfHight),   x: x(),          width: narrow,    height: halfHight },
-    topRight:     { y: y(),            x: x(narrow),    width: narrow,    height: halfHight },
-    bottomRight:  { y: y(halfHight),   x: x(narrow),    width: narrow,    height: halfHight },
-    centre:       { y: y(halfHight/2), x: x(narrow/2),  width: narrow,    height: halfHight },
-    leftThird:    { y: y(),            x: x(),          width: oneThird,  height: fullHight },
-    centreThird:  { y: y(),            x: x(oneThird),  width: oneThird,  height: fullHight },
-    rightThird:   { y: y(),            x: x(twoThirds), width: oneThird,  height: fullHight },
-    left2Thirds:  { y: y(),            x: x(),          width: twoThirds, height: fullHight },
-    right2Thirds: { y: y(),            x: x(oneThird),  width: twoThirds, height: fullHight },
-    topLeftSix:   { y: y(),            x: x(),          width: oneThird,  height: halfHight },
-    topCentreSix: { y: y(),            x: x(oneThird),  width: oneThird,  height: halfHight },
-    topRightSix:  { y: y(),            x: x(twoThirds), width: oneThird,  height: halfHight },
-    botLeftSix:   { y: y(halfHight),   x: x(),          width: oneThird,  height: halfHight },
-    botCentreSix: { y: y(halfHight),   x: x(oneThird),  width: oneThird,  height: halfHight },
-    botRightSix:  { y: y(halfHight),   x: x(twoThirds), width: oneThird,  height: halfHight }
-  };
-
-  return subFrames[direction];
-};
-
-/**
- * Build a subframe within a parent frame.
- * This fn does the work of subdividing the rectangle. (screen)
- *
- * @param parentFrame
- * @param desiredSize
- * @returns {*} / Rectangle
- */
-const getCenteredSpecificSize = (parentFrame, desiredSize) => {
-    /**
-     * When using multiple screens, the current screen may be offset from the Zero point screen,
-     * using the raw x,y coords blindly will mess up the positions.
-     * Instead, we offset the screen x,y, coords based on the original origin point of the screen.
-     *      |---|
-     *  |---|---|
-     * In this case we have two screens side by side, but aligned on the physical bottom edge.
-     * Remember that coords are origin 0,0 top left.
-     * screen 1.  { x: 0, y: 0, width: 800, height: 600 }
-     * screen 2.  { x: 800, y: -600, width: 1600, height: 1200 }
-     **/
-    const parentX = parentFrame.x;
-    const parentY = parentFrame.y;
-    const fullWide = parentFrame.width;
-    const fullHight = parentFrame.height;
-
-    const change = (original) => {
-        return (changeBy) => {
-            const offset = changeBy || 0;
-            return Math.round(original + offset);
-        };
-    };
-
-    const y = change(parentY);
-    const x = change(parentX);
-
-    const offsetWidth = Math.round(fullWide / 2) - Math.round(desiredSize.width / 2)
-    const offsetHeight = Math.round(fullHight / 2) - Math.round(desiredSize.height / 2)
-
-
-    return {y: y(offsetHeight), x: x(offsetWidth), width: desiredSize.width, height: desiredSize.height}
-};
-
-
-/**
- * Render a Phoenix Modal with a string message.
- *
- * TODO - Reuse the same Modal object to avoid artifacts when repeating actions and building lots of modals.
- *
- * @param message
- * @param onScreen
- * @returns {Modal}
+ * Render a Phoenix Modal with a string message centered on screen.
  */
 const alertModal = (message, onScreen) => {
-  const alertModal       = new Modal();
-  alertModal.textAlignment = 'right' // 3.0.0 ? 'right' makes the text centered?
-  alertModal.duration    = config.movementAlertDuration;
-  alertModal.text        = message;
-  alertModal.weight      = 30;
-  
+  const modal          = new Modal();
+  modal.textAlignment  = 'right'; // 3.0.0 quirk: 'right' actually centers the text
+  modal.duration       = config.movementAlertDuration;
+  modal.text           = message;
+  modal.weight         = 30;
 
-  const screenFrame     = (onScreen || Screen.main()).visibleFrame();
-  const alertFrame      = alertModal.frame();
+  const screenFrame = (onScreen || Screen.main()).visibleFrame();
+  const alertFrame  = modal.frame();
 
-  alertModal.origin = {
-    x:  (screenFrame.x + (screenFrame.width * 0.5)) - (alertFrame.width * 0.5),
-    y:  (screenFrame.y + (screenFrame.height * 0.5)) - (alertFrame.height * 0.5)
+  modal.origin = {
+    x: (screenFrame.x + (screenFrame.width * 0.5)) - (alertFrame.width * 0.5),
+    y: (screenFrame.y + (screenFrame.height * 0.5)) - (alertFrame.height * 0.5)
   };
 
-  alertModal.show();
-
-  return alertModal;
+  modal.show();
+  return modal;
 };
 
-
-const alertInFrame = (message, inFrame, onScreen) => {
-  const alertInFrame       = new Modal();
-  alertInFrame.textAlignment = 'right' // 3.0.0 ? 'right' makes the text centered?
-  alertInFrame.duration    = config.movementAlertDuration;
-  alertInFrame.text        = message;
-  alertInFrame.weight      = 30;
-  
-
-  const screenFrame     = (onScreen || Screen.main()).visibleFrame();
-  const alertFrame      = alertInFrame.frame();
-
-  alertInFrame.origin = {
-    x:  (inFrame.x + (inFrame.width * 0.5)) - (alertFrame.width * 0.25),
-    y:  (inFrame.y + (inFrame.height * 0.5)) - (alertFrame.height * 0.25)
-  };
-
-  alertInFrame.show();
-
-  return alertInFrame;
-}
-
-
-/**
- * Places an alertModal on the screen the window was on, with the provided text message.
- *
- * @param message
- * @param window
- */
 const windowMovedAlert = (message, window) => {
   if (window) {
     alertModal(message, window.screen());
   }
 };
 
-
 /**
- * Puts a window to a new screen.
- *
- * @param toScreen
- * @param keepMaximised
+ * Move a window to a different screen.
  */
 const putWindowScreen = (toScreen, keepMaximised = false) => {
   return () => {
     const window = Window.focused();
 
-    if (window == undefined) {
-      alertModal("NO Windows for current app");
+    if (window === undefined) {
+      alertModal('No windows for current app');
       return;
     }
 
@@ -471,46 +337,40 @@ const putWindowScreen = (toScreen, keepMaximised = false) => {
     const screenList = Screen.all();
 
     if (screenList.length < 2) {
-      alertModal("NO SCREENS");
+      alertModal('No other screens');
       return;
     }
 
-    const candidateOtherScreens = _.reject(screenList, (s) => ( s.identifier() == currentScreen.identifier() ));
-
-    const newScreen = candidateOtherScreens[0];
+    const otherScreens = _.reject(screenList, (s) => s.identifier() === currentScreen.identifier());
+    const newScreen = otherScreens[0];
     const newScreenFrame = newScreen.flippedVisibleFrame();
-
     const oldFrame = window.frame();
+    const currentScreenFrame = currentScreen.visibleFrame();
 
-    const currentScreenFrame = currentScreen.visibleFrame()
-
-    const newX = newScreenFrame['x'];
-    const newY = newScreenFrame['y'];
-    let newWidth;
-    let newHeight;
+    let newWidth, newHeight;
 
     // Maximised
-    if (keepMaximised && currentScreenFrame.width == oldFrame.width && currentScreenFrame.height == oldFrame.height) {
-      newWidth = newScreenFrame.width
-      newHeight = newScreenFrame.height
+    if (keepMaximised && currentScreenFrame.width === oldFrame.width && currentScreenFrame.height === oldFrame.height) {
+      newWidth  = newScreenFrame.width;
+      newHeight = newScreenFrame.height;
     } else {
     // Shrink to fit
-      newWidth = Math.min(oldFrame.width, newScreenFrame.width)
-      newHeight = Math.min(oldFrame.height, newScreenFrame.height)
+      newWidth  = Math.min(oldFrame.width, newScreenFrame.width);
+      newHeight = Math.min(oldFrame.height, newScreenFrame.height);
     }
 
     const newFrame = {
-      y:      newY,
-      x:      newX,
+      y:      newScreenFrame.y,
+      x:      newScreenFrame.x,
       width:  newWidth,
       height: newHeight
     };
 
-    const windowMovement = changeDirection(newFrame, oldFrame)
-    const message = `📺\n${windowMovement}`
+    const direction = changeDirection(newFrame, oldFrame);
+    const message = `📺\n${direction}`;
 
-    alertModal(message, currentScreen)
-    alertModal(message, newScreen)
+    alertModal(message, currentScreen);
+    alertModal(message, newScreen);
 
     window.setFrame(newFrame);
   };
@@ -518,26 +378,19 @@ const putWindowScreen = (toScreen, keepMaximised = false) => {
 
 // Given two frames, compare the x,y points, return a compass direction of the change.
 const changeDirection = (newFrame, oldFrame) => {
-  const xdir = Math.sign(newFrame.x - oldFrame.x)
-  const ydir = Math.sign(newFrame.y - oldFrame.y)
+  const xdir = Math.sign(newFrame.x - oldFrame.x);
+  const ydir = Math.sign(newFrame.y - oldFrame.y);
   const directions = [
-    ['↖︎','↑','↗︎'],
-    ['←','o','→'],
-    ['↙︎','↓','↘︎'],
-  ]
-  const dir = directions[ydir+1][xdir+1]
-
-  return dir
-}
-
-
+    ['↖︎', '↑', '↗︎'],
+    ['←',  'o', '→'],
+    ['↙︎', '↓', '↘︎'],
+  ];
+  return directions[ydir + 1][xdir + 1];
+};
 
 const debug = (o) => {
   Phoenix.notify(JSON.stringify(o));
-}
-
-const debugscreen = () => {debug((Window.focused().screen().flippedFrame()))}
-
+};
 
 // Phoenix requires us to keep a reference to the key handlers.
 const keyHandlers = setupHandlers(config.sizeUpDefaults);
