@@ -53,13 +53,6 @@
  *
  * Original keybinds and the SizeUp name - SizeUp - http://www.irradiatedsoftware.com/sizeup/
  *
- * TODO List:
- * - Add spaces support.
- *
- * - Reuse the same modal object.
- * - Convert whole script to an object
- * - Simplify the configuration.
- *
  * Known Bugs
  * - When resizing windows which define a minimum size (e.g. Spotify) when placed in a
  *   small size at a screen edge may push onto another monitor.
